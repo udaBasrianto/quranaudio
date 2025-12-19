@@ -5,6 +5,7 @@ import { SearchInput } from "@/components/SearchInput";
 import { ReciterCard } from "@/components/ReciterCard";
 import { SurahCard } from "@/components/SurahCard";
 import { AudioPlayer } from "@/components/AudioPlayer";
+import { SurahTextViewer } from "@/components/SurahTextViewer";
 import { ReciterSkeleton, SurahSkeleton } from "@/components/LoadingSkeleton";
 import { useReciters, useSurahs } from "@/hooks/useQuranData";
 import { Reciter, Surah, Moshaf } from "@/types/quran";
@@ -16,6 +17,7 @@ const Index = () => {
   const [selectedReciter, setSelectedReciter] = useState<Reciter | null>(null);
   const [selectedMoshaf, setSelectedMoshaf] = useState<Moshaf | null>(null);
   const [currentSurah, setCurrentSurah] = useState<Surah | null>(null);
+  const [showTextViewer, setShowTextViewer] = useState(false);
 
   const { data: recitersData, isLoading: isLoadingReciters } = useReciters();
   const { data: surahsData, isLoading: isLoadingSurahs } = useSurahs();
@@ -148,6 +150,15 @@ const Index = () => {
         </div>
       </main>
 
+      {/* Surah Text Viewer */}
+      {showTextViewer && currentSurah && (
+        <SurahTextViewer
+          surahNumber={currentSurah.id}
+          surahName={currentSurah.name}
+          onClose={() => setShowTextViewer(false)}
+        />
+      )}
+
       {/* Audio Player */}
       {currentSurah && selectedReciter && selectedMoshaf && surahsData?.suwar && (
         <AudioPlayer
@@ -158,6 +169,7 @@ const Index = () => {
           availableSurahs={availableSurahs}
           onSurahChange={setCurrentSurah}
           onClose={handleClosePlayer}
+          onShowText={() => setShowTextViewer(true)}
         />
       )}
     </div>
