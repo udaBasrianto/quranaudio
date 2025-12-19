@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, X } from "lucide-react";
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, X, BookOpen } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Surah, Reciter, Moshaf } from "@/types/quran";
 import { getSurahAudioUrl } from "@/lib/api";
@@ -12,6 +12,7 @@ interface AudioPlayerProps {
   availableSurahs: number[];
   onSurahChange: (surah: Surah) => void;
   onClose: () => void;
+  onShowText: () => void;
 }
 
 export function AudioPlayer({
@@ -22,6 +23,7 @@ export function AudioPlayer({
   availableSurahs,
   onSurahChange,
   onClose,
+  onShowText,
 }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -179,6 +181,15 @@ export function AudioPlayer({
               {reciter.name}
             </p>
           </div>
+
+          {/* Text button */}
+          <button
+            onClick={onShowText}
+            className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center hover:bg-primary/20 transition-colors"
+            title="Lihat Teks & Terjemahan"
+          >
+            <BookOpen className="w-5 h-5" />
+          </button>
 
           {/* Playback controls */}
           <div className="flex items-center gap-2">

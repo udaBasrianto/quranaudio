@@ -107,6 +107,11 @@ export default {
 				'Georgia',
 				'serif'
 			],
+			arabic: [
+				'Amiri',
+				'Traditional Arabic',
+				'serif'
+			],
 			mono: [
 				'ui-monospace',
 				'monospace'
