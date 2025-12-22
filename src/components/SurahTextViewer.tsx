@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { useSurahDetail } from "@/hooks/useSurahDetail";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -7,10 +8,34 @@ interface SurahTextViewerProps {
   surahNumber: number;
   surahName: string;
   onClose: () => void;
+  currentAyahIndex?: number | null;
+  onAyahsLoaded?: (count: number) => void;
 }
 
-export function SurahTextViewer({ surahNumber, surahName, onClose }: SurahTextViewerProps) {
+export function SurahTextViewer({ 
+  surahNumber, 
+  surahName, 
+  onClose,
+  currentAyahIndex,
+  onAyahsLoaded,
+}: SurahTextViewerProps) {
   const { data: surahDetail, isLoading, error } = useSurahDetail(surahNumber);
+  const ayahRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+
+  // Notify parent of total ayahs when loaded
+  useEffect(() => {
+    if (surahDetail?.ayat && onAyahsLoaded) {
+      onAyahsLoaded(surahDetail.ayat.length);
+    }
+  }, [surahDetail, onAyahsLoaded]);
+
+  // Auto-scroll to current ayah
+  useEffect(() => {
+    if (currentAyahIndex && ayahRefs.current.has(currentAyahIndex)) {
+      const element = ayahRefs.current.get(currentAyahIndex);
+      element?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [currentAyahIndex]);
 
   return (
     <div className="fixed inset-0 bg-background z-40 flex flex-col">
@@ -56,38 +81,57 @@ export function SurahTextViewer({ surahNumber, surahName, onClose }: SurahTextVi
             </div>
           )}
 
-          {surahDetail?.ayat.map((ayah) => (
-            <div
-              key={ayah.nomor}
-              className="bg-card rounded-lg p-4 border border-border space-y-3"
-            >
-              {/* Ayah number badge */}
-              <div className="flex justify-end">
-                <span className="w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-semibold flex items-center justify-center">
-                  {ayah.nomor}
-                </span>
-              </div>
-
-              {/* Arabic text */}
-              <p
-                className="text-2xl leading-loose text-foreground text-right font-arabic"
-                dir="rtl"
-                lang="ar"
+          {surahDetail?.ayat.map((ayah) => {
+            const isHighlighted = currentAyahIndex === ayah.nomor;
+            
+            return (
+              <div
+                key={ayah.nomor}
+                ref={(el) => {
+                  if (el) {
+                    ayahRefs.current.set(ayah.nomor, el);
+                  }
+                }}
+                className={`bg-card rounded-lg p-4 border space-y-3 transition-all duration-300 ${
+                  isHighlighted 
+                    ? "border-primary ring-2 ring-primary/30 shadow-lg" 
+                    : "border-border"
+                }`}
               >
-                {ayah.ar}
-              </p>
+                {/* Ayah number badge */}
+                <div className="flex justify-end">
+                  <span className={`w-8 h-8 rounded-full text-sm font-semibold flex items-center justify-center transition-colors ${
+                    isHighlighted 
+                      ? "bg-primary text-primary-foreground" 
+                      : "bg-primary/10 text-primary"
+                  }`}>
+                    {ayah.nomor}
+                  </span>
+                </div>
 
-              {/* Transliteration */}
-              <p className="text-sm text-muted-foreground italic">
-                {ayah.tr}
-              </p>
+                {/* Arabic text */}
+                <p
+                  className={`text-2xl leading-loose text-right font-arabic transition-colors ${
+                    isHighlighted ? "text-primary" : "text-foreground"
+                  }`}
+                  dir="rtl"
+                  lang="ar"
+                >
+                  {ayah.ar}
+                </p>
 
-              {/* Indonesian translation */}
-              <p className="text-sm text-foreground/80 leading-relaxed">
-                {ayah.idn}
-              </p>
-            </div>
-          ))}
+                {/* Transliteration */}
+                <p className="text-sm text-muted-foreground italic">
+                  {ayah.tr}
+                </p>
+
+                {/* Indonesian translation */}
+                <p className="text-sm text-foreground/80 leading-relaxed">
+                  {ayah.idn}
+                </p>
+              </div>
+            );
+          })}
         </div>
       </ScrollArea>
     </div>

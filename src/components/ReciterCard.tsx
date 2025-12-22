@@ -1,13 +1,21 @@
 import { Reciter } from "@/types/quran";
-import { User } from "lucide-react";
+import { User, Heart } from "lucide-react";
 
 interface ReciterCardProps {
   reciter: Reciter;
   onClick: () => void;
   isSelected?: boolean;
+  isFavorite?: boolean;
+  onToggleFavorite?: (e: React.MouseEvent) => void;
 }
 
-export function ReciterCard({ reciter, onClick, isSelected }: ReciterCardProps) {
+export function ReciterCard({ 
+  reciter, 
+  onClick, 
+  isSelected, 
+  isFavorite, 
+  onToggleFavorite 
+}: ReciterCardProps) {
   return (
     <button
       onClick={onClick}
@@ -29,6 +37,21 @@ export function ReciterCard({ reciter, onClick, isSelected }: ReciterCardProps) 
             {reciter.moshaf[0]?.surah_total || 0} Surah
           </p>
         </div>
+        {onToggleFavorite && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFavorite(e);
+            }}
+            className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary/10 transition-colors"
+          >
+            <Heart 
+              className={`w-5 h-5 transition-colors ${
+                isFavorite ? "fill-destructive text-destructive" : "text-muted-foreground"
+              }`} 
+            />
+          </button>
+        )}
       </div>
     </button>
   );
