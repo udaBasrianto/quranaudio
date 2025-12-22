@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState } from "react";
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, X, BookOpen } from "lucide-react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, X, BookOpen, Repeat, Repeat1, Shuffle } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Surah, Reciter, Moshaf } from "@/types/quran";
 import { getSurahAudioUrl } from "@/lib/api";
+
+type RepeatMode = "off" | "one" | "all";
 
 interface AudioPlayerProps {
   surah: Surah | null;
@@ -13,6 +15,7 @@ interface AudioPlayerProps {
   onSurahChange: (surah: Surah) => void;
   onClose: () => void;
   onShowText: () => void;
+  onTimeUpdate?: (currentTime: number, duration: number) => void;
 }
 
 export function AudioPlayer({
@@ -24,6 +27,7 @@ export function AudioPlayer({
   onSurahChange,
   onClose,
   onShowText,
+  onTimeUpdate,
 }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -32,6 +36,8 @@ export function AudioPlayer({
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [repeatMode, setRepeatMode] = useState<RepeatMode>("off");
+  const [isShuffle, setIsShuffle] = useState(false);
 
   useEffect(() => {
     if (!surah || !moshaf) return;
@@ -52,16 +58,56 @@ export function AudioPlayer({
     });
   }, [surah, moshaf]);
 
+  const getNextSurah = useCallback(() => {
+    if (!surah) return null;
+    const currentIndex = availableSurahs.indexOf(surah.id);
+    
+    if (isShuffle) {
+      const otherSurahs = availableSurahs.filter((_, i) => i !== currentIndex);
+      if (otherSurahs.length === 0) return null;
+      const randomIndex = Math.floor(Math.random() * otherSurahs.length);
+      const nextSurahId = otherSurahs[randomIndex];
+      return surahs.find(s => s.id === nextSurahId) || null;
+    }
+    
+    if (currentIndex < availableSurahs.length - 1) {
+      const nextSurahId = availableSurahs[currentIndex + 1];
+      return surahs.find(s => s.id === nextSurahId) || null;
+    } else if (repeatMode === "all") {
+      const firstSurahId = availableSurahs[0];
+      return surahs.find(s => s.id === firstSurahId) || null;
+    }
+    
+    return null;
+  }, [surah, availableSurahs, surahs, isShuffle, repeatMode]);
+
+  const handleEnded = useCallback(() => {
+    if (repeatMode === "one") {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.currentTime = 0;
+        audio.play();
+      }
+      return;
+    }
+    
+    const nextSurah = getNextSurah();
+    if (nextSurah) {
+      onSurahChange(nextSurah);
+    } else {
+      setIsPlaying(false);
+    }
+  }, [repeatMode, getNextSurah, onSurahChange]);
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const updateTime = () => setCurrentTime(audio.currentTime);
-    const updateDuration = () => setDuration(audio.duration);
-    const handleEnded = () => {
-      setIsPlaying(false);
-      handleNext();
+    const updateTime = () => {
+      setCurrentTime(audio.currentTime);
+      onTimeUpdate?.(audio.currentTime, audio.duration);
     };
+    const updateDuration = () => setDuration(audio.duration);
     const handleError = () => setIsLoading(false);
     const handleCanPlay = () => setIsLoading(false);
 
@@ -78,7 +124,7 @@ export function AudioPlayer({
       audio.removeEventListener("error", handleError);
       audio.removeEventListener("canplay", handleCanPlay);
     };
-  }, [availableSurahs, surah]);
+  }, [handleEnded, onTimeUpdate]);
 
   const togglePlay = () => {
     const audio = audioRef.current;
@@ -132,13 +178,22 @@ export function AudioPlayer({
   };
 
   const handleNext = () => {
-    if (!surah) return;
-    const currentIndex = availableSurahs.indexOf(surah.id);
-    if (currentIndex < availableSurahs.length - 1) {
-      const nextSurahId = availableSurahs[currentIndex + 1];
-      const nextSurah = surahs.find(s => s.id === nextSurahId);
-      if (nextSurah) onSurahChange(nextSurah);
+    const nextSurah = getNextSurah();
+    if (nextSurah) {
+      onSurahChange(nextSurah);
     }
+  };
+
+  const cycleRepeatMode = () => {
+    setRepeatMode((prev) => {
+      if (prev === "off") return "one";
+      if (prev === "one") return "all";
+      return "off";
+    });
+  };
+
+  const toggleShuffle = () => {
+    setIsShuffle((prev) => !prev);
   };
 
   const formatTime = (time: number) => {
@@ -189,6 +244,30 @@ export function AudioPlayer({
             title="Lihat Teks & Terjemahan"
           >
             <BookOpen className="w-5 h-5" />
+          </button>
+
+          {/* Repeat & Shuffle controls */}
+          <button
+            onClick={cycleRepeatMode}
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+              repeatMode !== "off" ? "text-primary bg-primary/10" : "text-muted-foreground hover:bg-muted"
+            }`}
+            title={repeatMode === "off" ? "Repeat Off" : repeatMode === "one" ? "Repeat One" : "Repeat All"}
+          >
+            {repeatMode === "one" ? (
+              <Repeat1 className="w-4 h-4" />
+            ) : (
+              <Repeat className="w-4 h-4" />
+            )}
+          </button>
+          <button
+            onClick={toggleShuffle}
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+              isShuffle ? "text-primary bg-primary/10" : "text-muted-foreground hover:bg-muted"
+            }`}
+            title={isShuffle ? "Shuffle On" : "Shuffle Off"}
+          >
+            <Shuffle className="w-4 h-4" />
           </button>
 
           {/* Playback controls */}

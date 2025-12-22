@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Header } from "@/components/Header";
 import { TabNavigation } from "@/components/TabNavigation";
 import { SearchInput } from "@/components/SearchInput";
@@ -8,6 +8,8 @@ import { AudioPlayer } from "@/components/AudioPlayer";
 import { SurahTextViewer } from "@/components/SurahTextViewer";
 import { ReciterSkeleton, SurahSkeleton } from "@/components/LoadingSkeleton";
 import { useReciters, useSurahs } from "@/hooks/useQuranData";
+import { useFavorites } from "@/hooks/useFavorites";
+import { useTheme } from "@/hooks/useTheme";
 import { Reciter, Surah, Moshaf } from "@/types/quran";
 import { ArrowLeft } from "lucide-react";
 
@@ -18,9 +20,13 @@ const Index = () => {
   const [selectedMoshaf, setSelectedMoshaf] = useState<Moshaf | null>(null);
   const [currentSurah, setCurrentSurah] = useState<Surah | null>(null);
   const [showTextViewer, setShowTextViewer] = useState(false);
+  const [currentAyahIndex, setCurrentAyahIndex] = useState<number | null>(null);
+  const [totalAyahs, setTotalAyahs] = useState<number>(0);
 
   const { data: recitersData, isLoading: isLoadingReciters } = useReciters();
   const { data: surahsData, isLoading: isLoadingSurahs } = useSurahs();
+  const { isReciterFavorite, isSurahFavorite, toggleReciterFavorite, toggleSurahFavorite } = useFavorites();
+  const { theme, toggleTheme } = useTheme();
 
   const filteredReciters = useMemo(() => {
     if (!recitersData?.reciters) return [];
@@ -53,6 +59,7 @@ const Index = () => {
   const handleSurahSelect = (surah: Surah) => {
     if (!selectedMoshaf || !availableSurahs.includes(surah.id)) return;
     setCurrentSurah(surah);
+    setCurrentAyahIndex(null);
   };
 
   const handleBackToReciters = () => {
@@ -64,11 +71,25 @@ const Index = () => {
 
   const handleClosePlayer = () => {
     setCurrentSurah(null);
+    setCurrentAyahIndex(null);
   };
+
+  const handleTimeUpdate = useCallback((currentTime: number, duration: number) => {
+    if (totalAyahs > 0 && duration > 0) {
+      // Estimate current ayah based on time proportion
+      const progress = currentTime / duration;
+      const estimatedAyah = Math.floor(progress * totalAyahs) + 1;
+      setCurrentAyahIndex(Math.min(estimatedAyah, totalAyahs));
+    }
+  }, [totalAyahs]);
+
+  const handleAyahsLoaded = useCallback((count: number) => {
+    setTotalAyahs(count);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      <Header />
+      <Header theme={theme} onToggleTheme={toggleTheme} />
 
       <main className="container mx-auto px-4 py-4 space-y-4">
         {/* Tab Navigation or Back Button */}
@@ -120,6 +141,8 @@ const Index = () => {
                     reciter={reciter}
                     onClick={() => handleReciterSelect(reciter)}
                     isSelected={selectedReciter?.id === reciter.id}
+                    isFavorite={isReciterFavorite(reciter.id)}
+                    onToggleFavorite={() => toggleReciterFavorite(reciter.id)}
                   />
                 ))
               )}
@@ -142,6 +165,8 @@ const Index = () => {
                     onClick={() => handleSurahSelect(surah)}
                     isPlaying={currentSurah?.id === surah.id}
                     isDisabled={selectedReciter ? !availableSurahs.includes(surah.id) : false}
+                    isFavorite={isSurahFavorite(surah.id)}
+                    onToggleFavorite={() => toggleSurahFavorite(surah.id)}
                   />
                 ))
               )}
@@ -156,6 +181,8 @@ const Index = () => {
           surahNumber={currentSurah.id}
           surahName={currentSurah.name}
           onClose={() => setShowTextViewer(false)}
+          currentAyahIndex={currentAyahIndex}
+          onAyahsLoaded={handleAyahsLoaded}
         />
       )}
 
@@ -170,6 +197,7 @@ const Index = () => {
           onSurahChange={setCurrentSurah}
           onClose={handleClosePlayer}
           onShowText={() => setShowTextViewer(true)}
+          onTimeUpdate={handleTimeUpdate}
         />
       )}
     </div>

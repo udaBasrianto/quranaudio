@@ -1,14 +1,23 @@
 import { Surah } from "@/types/quran";
-import { Play, BookOpen } from "lucide-react";
+import { Play, BookOpen, Heart } from "lucide-react";
 
 interface SurahCardProps {
   surah: Surah;
   onClick: () => void;
   isPlaying?: boolean;
   isDisabled?: boolean;
+  isFavorite?: boolean;
+  onToggleFavorite?: (e: React.MouseEvent) => void;
 }
 
-export function SurahCard({ surah, onClick, isPlaying, isDisabled }: SurahCardProps) {
+export function SurahCard({ 
+  surah, 
+  onClick, 
+  isPlaying, 
+  isDisabled,
+  isFavorite,
+  onToggleFavorite,
+}: SurahCardProps) {
   return (
     <button
       onClick={onClick}
@@ -38,6 +47,21 @@ export function SurahCard({ surah, onClick, isPlaying, isDisabled }: SurahCardPr
             <span>Hal. {surah.start_page}-{surah.end_page}</span>
           </div>
         </div>
+        {onToggleFavorite && !isDisabled && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFavorite(e);
+            }}
+            className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-primary/10 transition-colors"
+          >
+            <Heart 
+              className={`w-4 h-4 transition-colors ${
+                isFavorite ? "fill-destructive text-destructive" : "text-muted-foreground"
+              }`} 
+            />
+          </button>
+        )}
         {!isDisabled && (
           <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
             isPlaying ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground"
