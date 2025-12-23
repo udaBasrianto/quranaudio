@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useSurahDetail } from "@/hooks/useSurahDetail";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BookOpen, X, MapPin, FileText } from "lucide-react";
+import { BookOpen, X, MapPin, FileText, Bookmark } from "lucide-react";
 
 interface SurahTextViewerProps {
   surahNumber: number;
@@ -10,6 +10,14 @@ interface SurahTextViewerProps {
   onClose: () => void;
   currentAyahIndex?: number | null;
   onAyahsLoaded?: (count: number) => void;
+  isBookmarked: (surahNumber: number, ayahNumber: number) => boolean;
+  onToggleBookmark: (bookmark: {
+    surahNumber: number;
+    surahName: string;
+    ayahNumber: number;
+    teksArab: string;
+    teksIndonesia: string;
+  }) => void;
 }
 
 export function SurahTextViewer({ 
@@ -18,6 +26,8 @@ export function SurahTextViewer({
   onClose,
   currentAyahIndex,
   onAyahsLoaded,
+  isBookmarked,
+  onToggleBookmark,
 }: SurahTextViewerProps) {
   const { data: surahDetail, isLoading, error } = useSurahDetail(surahNumber);
   const ayahRefs = useRef<Map<number, HTMLDivElement>>(new Map());
@@ -139,7 +149,7 @@ export function SurahTextViewer({
                           : "border-border hover:border-primary/30"
                       }`}
                     >
-                      {/* Ayah number badge */}
+                      {/* Ayah number badge and bookmark */}
                       <div className="flex justify-between items-start mb-4">
                         <span className={`w-9 h-9 rounded-full text-sm font-semibold flex items-center justify-center transition-colors ${
                           isHighlighted 
@@ -148,6 +158,23 @@ export function SurahTextViewer({
                         }`}>
                           {ayah.nomorAyat}
                         </span>
+                        <button
+                          onClick={() => onToggleBookmark({
+                            surahNumber,
+                            surahName,
+                            ayahNumber: ayah.nomorAyat,
+                            teksArab: ayah.teksArab,
+                            teksIndonesia: ayah.teksIndonesia,
+                          })}
+                          className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+                            isBookmarked(surahNumber, ayah.nomorAyat)
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                          }`}
+                          aria-label={isBookmarked(surahNumber, ayah.nomorAyat) ? "Hapus bookmark" : "Tambah bookmark"}
+                        >
+                          <Bookmark className={`w-4 h-4 ${isBookmarked(surahNumber, ayah.nomorAyat) ? "fill-current" : ""}`} />
+                        </button>
                       </div>
 
                       {/* Arabic text */}
