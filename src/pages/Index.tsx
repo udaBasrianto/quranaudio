@@ -6,9 +6,11 @@ import { ReciterCard } from "@/components/ReciterCard";
 import { SurahCard } from "@/components/SurahCard";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { SurahTextViewer } from "@/components/SurahTextViewer";
+import { BookmarksList } from "@/components/BookmarksList";
 import { ReciterSkeleton, SurahSkeleton } from "@/components/LoadingSkeleton";
 import { useReciters, useSurahs } from "@/hooks/useQuranData";
 import { useFavorites } from "@/hooks/useFavorites";
+import { useBookmarks } from "@/hooks/useBookmarks";
 import { useTheme } from "@/hooks/useTheme";
 import { Reciter, Surah, Moshaf } from "@/types/quran";
 import { ArrowLeft } from "lucide-react";
@@ -20,12 +22,14 @@ const Index = () => {
   const [selectedMoshaf, setSelectedMoshaf] = useState<Moshaf | null>(null);
   const [currentSurah, setCurrentSurah] = useState<Surah | null>(null);
   const [showTextViewer, setShowTextViewer] = useState(false);
+  const [showBookmarks, setShowBookmarks] = useState(false);
   const [currentAyahIndex, setCurrentAyahIndex] = useState<number | null>(null);
   const [totalAyahs, setTotalAyahs] = useState<number>(0);
 
   const { data: recitersData, isLoading: isLoadingReciters } = useReciters();
   const { data: surahsData, isLoading: isLoadingSurahs } = useSurahs();
   const { isReciterFavorite, isSurahFavorite, toggleReciterFavorite, toggleSurahFavorite } = useFavorites();
+  const { bookmarks, isBookmarked, toggleBookmark, removeBookmark } = useBookmarks();
   const { theme, toggleTheme } = useTheme();
 
   const filteredReciters = useMemo(() => {
@@ -89,7 +93,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      <Header theme={theme} onToggleTheme={toggleTheme} />
+      <Header 
+        theme={theme} 
+        onToggleTheme={toggleTheme} 
+        bookmarkCount={bookmarks.length}
+        onShowBookmarks={() => setShowBookmarks(true)}
+      />
 
       <main className="container mx-auto px-4 py-4 space-y-4">
         {/* Tab Navigation or Back Button */}
@@ -175,6 +184,15 @@ const Index = () => {
         </div>
       </main>
 
+      {/* Bookmarks List */}
+      {showBookmarks && (
+        <BookmarksList
+          bookmarks={bookmarks}
+          onClose={() => setShowBookmarks(false)}
+          onRemove={removeBookmark}
+        />
+      )}
+
       {/* Surah Text Viewer */}
       {showTextViewer && currentSurah && (
         <SurahTextViewer
@@ -183,6 +201,8 @@ const Index = () => {
           onClose={() => setShowTextViewer(false)}
           currentAyahIndex={currentAyahIndex}
           onAyahsLoaded={handleAyahsLoaded}
+          isBookmarked={isBookmarked}
+          onToggleBookmark={toggleBookmark}
         />
       )}
 
