@@ -1,31 +1,35 @@
+// Using equran.id API for better Indonesian translation
 export interface Ayah {
-  id: number;
-  surah: number;
-  nomor: number;
-  ar: string;
-  tr: string;
-  idn: string;
+  nomorAyat: number;
+  teksArab: string;
+  teksLatin: string;
+  teksIndonesia: string;
+  audio: {
+    [key: string]: string;
+  };
 }
 
 export interface SurahDetail {
-  status: boolean;
   nomor: number;
   nama: string;
-  nama_latin: string;
-  jumlah_ayat: number;
-  tempat_turun: string;
+  namaLatin: string;
+  jumlahAyat: number;
+  tempatTurun: string;
   arti: string;
   deskripsi: string;
-  audio: string;
+  audioFull: {
+    [key: string]: string;
+  };
   ayat: Ayah[];
 }
 
 export async function fetchSurahDetail(surahNumber: number): Promise<SurahDetail> {
   const response = await fetch(
-    `https://quran-api.santrikoding.com/api/surah/${surahNumber}`
+    `https://equran.id/api/v2/surat/${surahNumber}`
   );
   if (!response.ok) {
     throw new Error("Failed to fetch surah detail");
   }
-  return response.json();
+  const result = await response.json();
+  return result.data;
 }
