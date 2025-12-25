@@ -1,13 +1,17 @@
 import { BookOpen, Moon, Sun, Bookmark } from "lucide-react";
+import { ThemeColorPicker } from "./ThemeColorPicker";
+import { ThemeColor } from "@/hooks/useTheme";
 
 interface HeaderProps {
   theme: "light" | "dark";
   onToggleTheme: () => void;
   bookmarkCount?: number;
   onShowBookmarks?: () => void;
+  themeColor: ThemeColor;
+  onColorChange: (color: ThemeColor) => void;
 }
 
-export function Header({ theme, onToggleTheme, bookmarkCount = 0, onShowBookmarks }: HeaderProps) {
+export function Header({ theme, onToggleTheme, bookmarkCount = 0, onShowBookmarks, themeColor, onColorChange }: HeaderProps) {
   return (
     <header className="sticky top-0 z-40 bg-primary text-primary-foreground shadow-lg">
       <div className="container mx-auto px-4 py-4">
@@ -45,6 +49,7 @@ export function Header({ theme, onToggleTheme, bookmarkCount = 0, onShowBookmark
                 <Sun className="w-5 h-5" />
               )}
             </button>
+            <ThemeColorPicker currentColor={themeColor} onColorChange={onColorChange} />
           </div>
         </div>
       </div>

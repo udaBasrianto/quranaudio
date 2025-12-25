@@ -30,7 +30,7 @@ const Index = () => {
   const { data: surahsData, isLoading: isLoadingSurahs } = useSurahs();
   const { isReciterFavorite, isSurahFavorite, toggleReciterFavorite, toggleSurahFavorite } = useFavorites();
   const { bookmarks, isBookmarked, toggleBookmark, removeBookmark } = useBookmarks();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, themeColor, setThemeColor } = useTheme();
 
   const filteredReciters = useMemo(() => {
     if (!recitersData?.reciters) return [];
@@ -98,6 +98,8 @@ const Index = () => {
         onToggleTheme={toggleTheme} 
         bookmarkCount={bookmarks.length}
         onShowBookmarks={() => setShowBookmarks(true)}
+        themeColor={themeColor}
+        onColorChange={setThemeColor}
       />
 
       <main className="container mx-auto px-4 py-4 space-y-4">
