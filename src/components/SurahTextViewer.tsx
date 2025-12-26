@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSurahDetail } from "@/hooks/useSurahDetail";
+import { useTafsir } from "@/hooks/useTafsir";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BookOpen, X, MapPin, FileText, Bookmark } from "lucide-react";
+import { BookOpen, X, MapPin, FileText, Bookmark, BookMarked, ChevronDown, ChevronUp } from "lucide-react";
 
 interface SurahTextViewerProps {
   surahNumber: number;
@@ -30,7 +31,29 @@ export function SurahTextViewer({
   onToggleBookmark,
 }: SurahTextViewerProps) {
   const { data: surahDetail, isLoading, error } = useSurahDetail(surahNumber);
+  const { data: tafsirData, isLoading: tafsirLoading } = useTafsir(surahNumber);
   const ayahRefs = useRef<Map<number, HTMLDivElement>>(new Map());
+  const [expandedTafsir, setExpandedTafsir] = useState<Set<number>>(new Set());
+
+  // Toggle tafsir visibility for an ayah
+  const toggleTafsir = (ayahNumber: number) => {
+    setExpandedTafsir((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(ayahNumber)) {
+        newSet.delete(ayahNumber);
+      } else {
+        newSet.add(ayahNumber);
+      }
+      return newSet;
+    });
+  };
+
+  // Get tafsir for a specific ayah
+  const getTafsirForAyah = (ayahNumber: number): string | null => {
+    if (!tafsirData?.tafsir) return null;
+    const tafsir = tafsirData.tafsir.find((t) => t.ayat === ayahNumber);
+    return tafsir?.teks || null;
+  };
 
   // Notify parent of total ayahs when loaded
   useEffect(() => {
@@ -198,6 +221,39 @@ export function SurahTextViewer({
                         <span className="text-primary font-medium">{ayah.nomorAyat}.</span>{" "}
                         {ayah.teksIndonesia}
                       </p>
+
+                      {/* Tafsir Ibnu Katsir */}
+                      {getTafsirForAyah(ayah.nomorAyat) && (
+                        <div className="mt-3 pt-3 border-t border-border/50">
+                          <button
+                            onClick={() => toggleTafsir(ayah.nomorAyat)}
+                            className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors font-medium"
+                          >
+                            <BookMarked className="w-4 h-4" />
+                            <span>Tafsir Ibnu Katsir</span>
+                            {expandedTafsir.has(ayah.nomorAyat) ? (
+                              <ChevronUp className="w-4 h-4" />
+                            ) : (
+                              <ChevronDown className="w-4 h-4" />
+                            )}
+                          </button>
+                          {expandedTafsir.has(ayah.nomorAyat) && (
+                            <div className="mt-3 p-4 bg-primary/5 rounded-lg border border-primary/10">
+                              <p 
+                                className="text-sm text-foreground/80 leading-relaxed"
+                                dangerouslySetInnerHTML={{ 
+                                  __html: getTafsirForAyah(ayah.nomorAyat) || "" 
+                                }}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {tafsirLoading && (
+                        <div className="mt-3 pt-3 border-t border-border/50">
+                          <Skeleton className="h-4 w-32" />
+                        </div>
+                      )}
                     </div>
                   );
                 })}
