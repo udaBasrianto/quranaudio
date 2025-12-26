@@ -7,11 +7,12 @@ import { SurahCard } from "@/components/SurahCard";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { SurahTextViewer } from "@/components/SurahTextViewer";
 import { BookmarksList } from "@/components/BookmarksList";
+import { AyahSearchResults } from "@/components/AyahSearchResults";
 import { ReciterSkeleton, SurahSkeleton } from "@/components/LoadingSkeleton";
 import { useReciters, useSurahs } from "@/hooks/useQuranData";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useBookmarks } from "@/hooks/useBookmarks";
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme, FontSize } from "@/hooks/useTheme";
 import { Reciter, Surah, Moshaf } from "@/types/quran";
 import { ArrowLeft } from "lucide-react";
 
@@ -23,6 +24,8 @@ const Index = () => {
   const [currentSurah, setCurrentSurah] = useState<Surah | null>(null);
   const [showTextViewer, setShowTextViewer] = useState(false);
   const [showBookmarks, setShowBookmarks] = useState(false);
+  const [showAyahSearch, setShowAyahSearch] = useState(false);
+  const [ayahSearchQuery, setAyahSearchQuery] = useState("");
   const [currentAyahIndex, setCurrentAyahIndex] = useState<number | null>(null);
   const [totalAyahs, setTotalAyahs] = useState<number>(0);
 
@@ -30,7 +33,7 @@ const Index = () => {
   const { data: surahsData, isLoading: isLoadingSurahs } = useSurahs();
   const { isReciterFavorite, isSurahFavorite, toggleReciterFavorite, toggleSurahFavorite } = useFavorites();
   const { bookmarks, isBookmarked, toggleBookmark, removeBookmark } = useBookmarks();
-  const { theme, toggleTheme, themeColor, setThemeColor } = useTheme();
+  const { theme, toggleTheme, themeColor, setThemeColor, arabicFontSize, setArabicFontSize, getArabicFontStyle } = useTheme();
 
   const filteredReciters = useMemo(() => {
     if (!recitersData?.reciters) return [];
@@ -100,6 +103,9 @@ const Index = () => {
         onShowBookmarks={() => setShowBookmarks(true)}
         themeColor={themeColor}
         onColorChange={setThemeColor}
+        arabicFontSize={arabicFontSize}
+        onFontSizeChange={setArabicFontSize}
+        onOpenSearch={() => setShowAyahSearch(true)}
       />
 
       <main className="container mx-auto px-4 py-4 space-y-4">
@@ -186,6 +192,51 @@ const Index = () => {
         </div>
       </main>
 
+      {/* Ayah Search */}
+      {showAyahSearch && (
+        <div className="fixed inset-0 z-50 bg-background">
+          <div className="container mx-auto px-4 py-4">
+            <SearchInput
+              value={ayahSearchQuery}
+              onChange={setAyahSearchQuery}
+              placeholder="Cari ayat (minimal 3 karakter)..."
+            />
+          </div>
+          {ayahSearchQuery.length >= 3 && (
+            <AyahSearchResults
+              query={ayahSearchQuery}
+              onClose={() => {
+                setShowAyahSearch(false);
+                setAyahSearchQuery("");
+              }}
+              onSelectAyah={(surahNumber, _ayahNumber) => {
+                const surah = surahsData?.suwar.find((s) => s.id === surahNumber);
+                if (surah) {
+                  setCurrentSurah(surah);
+                  setShowTextViewer(true);
+                }
+                setShowAyahSearch(false);
+                setAyahSearchQuery("");
+              }}
+            />
+          )}
+          {ayahSearchQuery.length < 3 && (
+            <div className="container mx-auto px-4 py-12 text-center">
+              <p className="text-muted-foreground">Ketik minimal 3 karakter untuk mencari ayat</p>
+              <button
+                onClick={() => {
+                  setShowAyahSearch(false);
+                  setAyahSearchQuery("");
+                }}
+                className="mt-4 text-primary hover:underline"
+              >
+                Tutup Pencarian
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Bookmarks List */}
       {showBookmarks && (
         <BookmarksList
@@ -205,6 +256,7 @@ const Index = () => {
           onAyahsLoaded={handleAyahsLoaded}
           isBookmarked={isBookmarked}
           onToggleBookmark={toggleBookmark}
+          arabicFontSize={getArabicFontStyle()}
         />
       )}
 

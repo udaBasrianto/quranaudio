@@ -19,6 +19,7 @@ interface SurahTextViewerProps {
     teksArab: string;
     teksIndonesia: string;
   }) => void;
+  arabicFontSize?: { id: string; name: string; size: string; mobileSize: string };
 }
 
 export function SurahTextViewer({ 
@@ -29,6 +30,7 @@ export function SurahTextViewer({
   onAyahsLoaded,
   isBookmarked,
   onToggleBookmark,
+  arabicFontSize,
 }: SurahTextViewerProps) {
   const { data: surahDetail, isLoading, error } = useSurahDetail(surahNumber);
   const { data: tafsirData, isLoading: tafsirLoading } = useTafsir(surahNumber);
@@ -144,7 +146,10 @@ export function SurahTextViewer({
               {/* Bismillah */}
               {showBismillah && (
                 <div className="text-center py-8 mb-6">
-                  <p className="text-3xl font-arabic text-primary leading-loose">
+                  <p 
+                    className="font-arabic text-primary leading-loose"
+                    style={{ fontSize: arabicFontSize?.size || "2rem" }}
+                  >
                     بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
                   </p>
                   <p className="text-sm text-muted-foreground mt-2 italic">
@@ -202,11 +207,12 @@ export function SurahTextViewer({
 
                       {/* Arabic text */}
                       <p
-                        className={`text-2xl md:text-3xl leading-[2.5] text-right font-arabic mb-5 transition-colors ${
+                        className={`leading-[2.5] text-right font-arabic mb-5 transition-colors ${
                           isHighlighted ? "text-primary" : "text-foreground"
                         }`}
                         dir="rtl"
                         lang="ar"
+                        style={{ fontSize: arabicFontSize?.size || "2rem" }}
                       >
                         {ayah.teksArab}
                       </p>

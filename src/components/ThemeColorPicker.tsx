@@ -1,13 +1,16 @@
 import { Settings, Check } from "lucide-react";
 import { useState } from "react";
-import { themeColors, ThemeColor } from "@/hooks/useTheme";
+import { themeColors, ThemeColor, FontSize } from "@/hooks/useTheme";
+import { FontSizePicker } from "./FontSizePicker";
 
 interface ThemeColorPickerProps {
   currentColor: ThemeColor;
   onColorChange: (color: ThemeColor) => void;
+  arabicFontSize: FontSize;
+  onFontSizeChange: (size: FontSize) => void;
 }
 
-export function ThemeColorPicker({ currentColor, onColorChange }: ThemeColorPickerProps) {
+export function ThemeColorPicker({ currentColor, onColorChange, arabicFontSize, onFontSizeChange }: ThemeColorPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -15,7 +18,7 @@ export function ThemeColorPicker({ currentColor, onColorChange }: ThemeColorPick
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-10 h-10 rounded-full bg-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/30 transition-colors"
-        aria-label="Pengaturan warna tema"
+        aria-label="Pengaturan"
       >
         <Settings className="w-5 h-5" />
       </button>
@@ -26,7 +29,7 @@ export function ThemeColorPicker({ currentColor, onColorChange }: ThemeColorPick
             className="fixed inset-0 z-40" 
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 top-12 z-50 bg-card border border-border rounded-xl shadow-lg p-4 min-w-[200px]">
+          <div className="absolute right-0 top-12 z-50 bg-card border border-border rounded-xl shadow-lg p-4 min-w-[240px] max-h-[80vh] overflow-y-auto">
             <h3 className="text-sm font-semibold text-foreground mb-3">Warna Tema</h3>
             <div className="grid grid-cols-3 gap-2">
               {themeColors.map((color) => (
@@ -34,7 +37,6 @@ export function ThemeColorPicker({ currentColor, onColorChange }: ThemeColorPick
                   key={color.id}
                   onClick={() => {
                     onColorChange(color.id);
-                    setIsOpen(false);
                   }}
                   className="flex flex-col items-center gap-1 p-2 rounded-lg hover:bg-muted transition-colors"
                   title={color.name}
@@ -51,6 +53,13 @@ export function ThemeColorPicker({ currentColor, onColorChange }: ThemeColorPick
                 </button>
               ))}
             </div>
+            
+            <div className="border-t border-border my-4" />
+            
+            <FontSizePicker 
+              currentSize={arabicFontSize} 
+              onSizeChange={onFontSizeChange} 
+            />
           </div>
         </>
       )}

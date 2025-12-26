@@ -1,6 +1,6 @@
-import { BookOpen, Moon, Sun, Bookmark } from "lucide-react";
+import { BookOpen, Moon, Sun, Bookmark, Search } from "lucide-react";
 import { ThemeColorPicker } from "./ThemeColorPicker";
-import { ThemeColor } from "@/hooks/useTheme";
+import { ThemeColor, FontSize } from "@/hooks/useTheme";
 
 interface HeaderProps {
   theme: "light" | "dark";
@@ -9,9 +9,22 @@ interface HeaderProps {
   onShowBookmarks?: () => void;
   themeColor: ThemeColor;
   onColorChange: (color: ThemeColor) => void;
+  arabicFontSize: FontSize;
+  onFontSizeChange: (size: FontSize) => void;
+  onOpenSearch?: () => void;
 }
 
-export function Header({ theme, onToggleTheme, bookmarkCount = 0, onShowBookmarks, themeColor, onColorChange }: HeaderProps) {
+export function Header({ 
+  theme, 
+  onToggleTheme, 
+  bookmarkCount = 0, 
+  onShowBookmarks, 
+  themeColor, 
+  onColorChange,
+  arabicFontSize,
+  onFontSizeChange,
+  onOpenSearch,
+}: HeaderProps) {
   return (
     <header className="sticky top-0 z-40 bg-primary text-primary-foreground shadow-lg">
       <div className="container mx-auto px-4 py-4">
@@ -26,6 +39,13 @@ export function Header({ theme, onToggleTheme, bookmarkCount = 0, onShowBookmark
             </div>
           </div>
           <div className="flex items-center gap-2">
+            <button
+              onClick={onOpenSearch}
+              className="w-10 h-10 rounded-full bg-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/30 transition-colors"
+              aria-label="Cari ayat"
+            >
+              <Search className="w-5 h-5" />
+            </button>
             <button
               onClick={onShowBookmarks}
               className="relative w-10 h-10 rounded-full bg-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/30 transition-colors"
@@ -49,7 +69,12 @@ export function Header({ theme, onToggleTheme, bookmarkCount = 0, onShowBookmark
                 <Sun className="w-5 h-5" />
               )}
             </button>
-            <ThemeColorPicker currentColor={themeColor} onColorChange={onColorChange} />
+            <ThemeColorPicker 
+              currentColor={themeColor} 
+              onColorChange={onColorChange}
+              arabicFontSize={arabicFontSize}
+              onFontSizeChange={onFontSizeChange}
+            />
           </div>
         </div>
       </div>

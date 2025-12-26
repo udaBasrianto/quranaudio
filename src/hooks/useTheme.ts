@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 
 type Theme = "light" | "dark";
 export type ThemeColor = "green" | "blue" | "purple" | "orange" | "red" | "teal";
+export type FontSize = "small" | "medium" | "large" | "xlarge";
 
 const THEME_KEY = "quran-audio-theme";
 const COLOR_KEY = "quran-audio-color";
+const FONT_SIZE_KEY = "quran-arabic-font-size";
 
 export const themeColors: { id: ThemeColor; name: string; hue: number }[] = [
   { id: "green", name: "Hijau", hue: 160 },
@@ -13,6 +15,13 @@ export const themeColors: { id: ThemeColor; name: string; hue: number }[] = [
   { id: "orange", name: "Oranye", hue: 25 },
   { id: "red", name: "Merah", hue: 0 },
   { id: "teal", name: "Teal", hue: 180 },
+];
+
+export const fontSizes: { id: FontSize; name: string; size: string; mobileSize: string }[] = [
+  { id: "small", name: "Kecil", size: "1.5rem", mobileSize: "1.25rem" },
+  { id: "medium", name: "Sedang", size: "2rem", mobileSize: "1.5rem" },
+  { id: "large", name: "Besar", size: "2.5rem", mobileSize: "2rem" },
+  { id: "xlarge", name: "Sangat Besar", size: "3rem", mobileSize: "2.5rem" },
 ];
 
 export function useTheme() {
@@ -33,6 +42,14 @@ export function useTheme() {
       if (stored) return stored;
     }
     return "green";
+  });
+
+  const [arabicFontSize, setArabicFontSize] = useState<FontSize>(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem(FONT_SIZE_KEY) as FontSize;
+      if (stored) return stored;
+    }
+    return "medium";
   });
 
   useEffect(() => {
@@ -63,9 +80,18 @@ export function useTheme() {
     localStorage.setItem(COLOR_KEY, themeColor);
   }, [themeColor, theme]);
 
+  useEffect(() => {
+    localStorage.setItem(FONT_SIZE_KEY, arabicFontSize);
+  }, [arabicFontSize]);
+
   const toggleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
-  return { theme, toggleTheme, themeColor, setThemeColor };
+  const getArabicFontStyle = () => {
+    const config = fontSizes.find((f) => f.id === arabicFontSize);
+    return config || fontSizes[1];
+  };
+
+  return { theme, toggleTheme, themeColor, setThemeColor, arabicFontSize, setArabicFontSize, getArabicFontStyle };
 }
