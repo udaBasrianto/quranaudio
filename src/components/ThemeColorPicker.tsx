@@ -1,16 +1,37 @@
 import { Settings, Check } from "lucide-react";
 import { useState } from "react";
-import { themeColors, ThemeColor, FontSize } from "@/hooks/useTheme";
+import { themeColors, ThemeColor, FontSize, AutoNightMode } from "@/hooks/useTheme";
 import { FontSizePicker } from "./FontSizePicker";
+import { AutoNightModePicker } from "./AutoNightModePicker";
+import type { PrayerTimes } from "@/hooks/usePrayerTimes";
 
 interface ThemeColorPickerProps {
   currentColor: ThemeColor;
   onColorChange: (color: ThemeColor) => void;
   arabicFontSize: FontSize;
   onFontSizeChange: (size: FontSize) => void;
+  autoNightMode: AutoNightMode;
+  onAutoNightModeChange: (mode: AutoNightMode) => void;
+  customNightStart: string;
+  onCustomNightStartChange: (time: string) => void;
+  customNightEnd: string;
+  onCustomNightEndChange: (time: string) => void;
+  prayerTimes: PrayerTimes | null;
 }
 
-export function ThemeColorPicker({ currentColor, onColorChange, arabicFontSize, onFontSizeChange }: ThemeColorPickerProps) {
+export function ThemeColorPicker({
+  currentColor,
+  onColorChange,
+  arabicFontSize,
+  onFontSizeChange,
+  autoNightMode,
+  onAutoNightModeChange,
+  customNightStart,
+  onCustomNightStartChange,
+  customNightEnd,
+  onCustomNightEndChange,
+  prayerTimes,
+}: ThemeColorPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -29,7 +50,7 @@ export function ThemeColorPicker({ currentColor, onColorChange, arabicFontSize, 
             className="fixed inset-0 z-40" 
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 top-12 z-50 bg-card border border-border rounded-xl shadow-lg p-4 min-w-[240px] max-h-[80vh] overflow-y-auto">
+          <div className="absolute right-0 top-12 z-50 bg-card border border-border rounded-xl shadow-lg p-4 min-w-[280px] max-h-[80vh] overflow-y-auto">
             <h3 className="text-sm font-semibold text-foreground mb-3">Warna Tema</h3>
             <div className="grid grid-cols-3 gap-2">
               {themeColors.map((color) => (
@@ -59,6 +80,18 @@ export function ThemeColorPicker({ currentColor, onColorChange, arabicFontSize, 
             <FontSizePicker 
               currentSize={arabicFontSize} 
               onSizeChange={onFontSizeChange} 
+            />
+            
+            <div className="border-t border-border my-4" />
+            
+            <AutoNightModePicker
+              autoNightMode={autoNightMode}
+              onAutoNightModeChange={onAutoNightModeChange}
+              customNightStart={customNightStart}
+              onCustomNightStartChange={onCustomNightStartChange}
+              customNightEnd={customNightEnd}
+              onCustomNightEndChange={onCustomNightEndChange}
+              prayerTimes={prayerTimes}
             />
           </div>
         </>

@@ -33,7 +33,22 @@ const Index = () => {
   const { data: surahsData, isLoading: isLoadingSurahs } = useSurahs();
   const { isReciterFavorite, isSurahFavorite, toggleReciterFavorite, toggleSurahFavorite } = useFavorites();
   const { bookmarks, isBookmarked, toggleBookmark, removeBookmark } = useBookmarks();
-  const { theme, toggleTheme, themeColor, setThemeColor, arabicFontSize, setArabicFontSize, getArabicFontStyle } = useTheme();
+  const { 
+    theme, 
+    toggleTheme, 
+    themeColor, 
+    setThemeColor, 
+    arabicFontSize, 
+    setArabicFontSize, 
+    getArabicFontStyle,
+    autoNightMode,
+    setAutoNightMode,
+    customNightStart,
+    setCustomNightStart,
+    customNightEnd,
+    setCustomNightEnd,
+    prayerTimes,
+  } = useTheme();
 
   const filteredReciters = useMemo(() => {
     if (!recitersData?.reciters) return [];
@@ -106,6 +121,13 @@ const Index = () => {
         arabicFontSize={arabicFontSize}
         onFontSizeChange={setArabicFontSize}
         onOpenSearch={() => setShowAyahSearch(true)}
+        autoNightMode={autoNightMode}
+        onAutoNightModeChange={setAutoNightMode}
+        customNightStart={customNightStart}
+        onCustomNightStartChange={setCustomNightStart}
+        customNightEnd={customNightEnd}
+        onCustomNightEndChange={setCustomNightEnd}
+        prayerTimes={prayerTimes}
       />
 
       <main className="container mx-auto px-4 py-4 space-y-4">

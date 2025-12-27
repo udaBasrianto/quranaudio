@@ -1,6 +1,7 @@
 import { BookOpen, Moon, Sun, Bookmark, Search } from "lucide-react";
 import { ThemeColorPicker } from "./ThemeColorPicker";
-import { ThemeColor, FontSize } from "@/hooks/useTheme";
+import { ThemeColor, FontSize, AutoNightMode } from "@/hooks/useTheme";
+import type { PrayerTimes } from "@/hooks/usePrayerTimes";
 
 interface HeaderProps {
   theme: "light" | "dark";
@@ -12,6 +13,13 @@ interface HeaderProps {
   arabicFontSize: FontSize;
   onFontSizeChange: (size: FontSize) => void;
   onOpenSearch?: () => void;
+  autoNightMode: AutoNightMode;
+  onAutoNightModeChange: (mode: AutoNightMode) => void;
+  customNightStart: string;
+  onCustomNightStartChange: (time: string) => void;
+  customNightEnd: string;
+  onCustomNightEndChange: (time: string) => void;
+  prayerTimes: PrayerTimes | null;
 }
 
 export function Header({ 
@@ -24,6 +32,13 @@ export function Header({
   arabicFontSize,
   onFontSizeChange,
   onOpenSearch,
+  autoNightMode,
+  onAutoNightModeChange,
+  customNightStart,
+  onCustomNightStartChange,
+  customNightEnd,
+  onCustomNightEndChange,
+  prayerTimes,
 }: HeaderProps) {
   return (
     <header className="sticky top-0 z-40 bg-primary text-primary-foreground shadow-lg">
@@ -74,6 +89,13 @@ export function Header({
               onColorChange={onColorChange}
               arabicFontSize={arabicFontSize}
               onFontSizeChange={onFontSizeChange}
+              autoNightMode={autoNightMode}
+              onAutoNightModeChange={onAutoNightModeChange}
+              customNightStart={customNightStart}
+              onCustomNightStartChange={onCustomNightStartChange}
+              customNightEnd={customNightEnd}
+              onCustomNightEndChange={onCustomNightEndChange}
+              prayerTimes={prayerTimes}
             />
           </div>
         </div>
