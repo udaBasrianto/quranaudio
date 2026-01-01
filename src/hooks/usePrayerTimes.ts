@@ -19,8 +19,9 @@ export function usePrayerTimes() {
         // Get user's location
         const position = await new Promise<GeolocationPosition>((resolve, reject) => {
           navigator.geolocation.getCurrentPosition(resolve, reject, {
-            timeout: 5000,
-            enableHighAccuracy: false,
+            timeout: 10000,
+            enableHighAccuracy: true,
+            maximumAge: 300000, // Cache for 5 minutes
           });
         });
 
