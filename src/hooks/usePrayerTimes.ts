@@ -12,6 +12,7 @@ export interface PrayerTimes {
 export function usePrayerTimes() {
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
   const [loading, setLoading] = useState(true);
+  const [locationName, setLocationName] = useState<string>("Lokasi Anda");
 
   useEffect(() => {
     const fetchPrayerTimes = async () => {
@@ -29,13 +30,26 @@ export function usePrayerTimes() {
         const today = new Date();
         const date = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
 
-        const response = await fetch(
-          `https://api.aladhan.com/v1/timings/${date}?latitude=${latitude}&longitude=${longitude}&method=20`
-        );
-        const data = await response.json();
+        // Fetch prayer times and location name in parallel
+        const [prayerResponse, geoResponse] = await Promise.all([
+          fetch(`https://api.aladhan.com/v1/timings/${date}?latitude=${latitude}&longitude=${longitude}&method=20`),
+          fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`)
+        ]);
 
-        if (data.code === 200) {
-          setPrayerTimes(data.data.timings);
+        const prayerData = await prayerResponse.json();
+        
+        if (prayerData.code === 200) {
+          setPrayerTimes(prayerData.data.timings);
+        }
+
+        try {
+          const geoData = await geoResponse.json();
+          const city = geoData.address?.city || geoData.address?.town || geoData.address?.village || geoData.address?.county || geoData.address?.state;
+          if (city) {
+            setLocationName(city);
+          }
+        } catch {
+          // Keep default location name if geocoding fails
         }
       } catch (error) {
         console.log("Could not fetch prayer times, using default hours");
@@ -78,5 +92,5 @@ export function usePrayerTimes() {
     return false;
   };
 
-  return { prayerTimes, loading, isNightTime };
+  return { prayerTimes, loading, isNightTime, locationName };
 }
