@@ -1,6 +1,8 @@
 import { usePrayerTimes } from "@/hooks/usePrayerTimes";
-import { Clock, Sun, Sunrise, Sunset, Moon, MapPin, Loader2, Timer } from "lucide-react";
+import { Clock, Sun, Sunrise, Sunset, Moon, MapPin, Loader2, Timer, Settings } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
+import { LocationPicker } from "./LocationPicker";
+import { Button } from "./ui/button";
 
 interface PrayerTimeItemProps {
   name: string;
@@ -27,8 +29,9 @@ const PrayerTimeItem = ({ name, time, icon, isActive, isNext }: PrayerTimeItemPr
 );
 
 export function PrayerTimesWidget() {
-  const { prayerTimes, loading, locationName } = usePrayerTimes();
+  const { prayerTimes, loading, locationName, gpsError, manualLocation, setManualLocation } = usePrayerTimes();
   const [countdown, setCountdown] = useState<string>("");
+  const [showLocationPicker, setShowLocationPicker] = useState(false);
 
   const { currentPrayer, nextPrayer, nextPrayerTime } = useMemo(() => {
     if (!prayerTimes) return { currentPrayer: null, nextPrayer: null, nextPrayerTime: null };
@@ -170,6 +173,26 @@ export function PrayerTimesWidget() {
     { name: "Isha", time: prayerTimes.Isha },
   ];
 
+  // Auto-show picker if GPS fails and no manual location
+  useEffect(() => {
+    if (gpsError && !manualLocation) {
+      setShowLocationPicker(true);
+    }
+  }, [gpsError, manualLocation]);
+
+  if (showLocationPicker) {
+    return (
+      <LocationPicker
+        onLocationSelect={(loc) => {
+          setManualLocation(loc);
+          setShowLocationPicker(false);
+        }}
+        currentLocation={manualLocation}
+        onClose={() => setShowLocationPicker(false)}
+      />
+    );
+  }
+
   return (
     <div className="bg-card border border-border rounded-xl p-4 mb-4">
       <div className="flex items-center justify-between mb-3">
@@ -177,10 +200,16 @@ export function PrayerTimesWidget() {
           <Clock className="w-4 h-4 text-primary" />
           <h3 className="font-semibold text-foreground text-sm">Waktu Shalat</h3>
         </div>
-        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-          <MapPin className="w-3 h-3" />
-          <span>{locationName}</span>
-        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
+          onClick={() => setShowLocationPicker(true)}
+        >
+          <MapPin className="w-3 h-3 mr-1" />
+          <span className="max-w-24 truncate">{locationName}</span>
+          <Settings className="w-3 h-3 ml-1" />
+        </Button>
       </div>
       
       <div className="grid grid-cols-5 gap-2">
