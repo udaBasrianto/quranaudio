@@ -9,6 +9,7 @@ import { SurahTextViewer } from "@/components/SurahTextViewer";
 import { BookmarksList } from "@/components/BookmarksList";
 import { AyahSearchResults } from "@/components/AyahSearchResults";
 import { ReciterSkeleton, SurahSkeleton } from "@/components/LoadingSkeleton";
+import { PrayerTimesWidget } from "@/components/PrayerTimesWidget";
 import { useReciters, useSurahs } from "@/hooks/useQuranData";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useBookmarks } from "@/hooks/useBookmarks";
@@ -131,6 +132,9 @@ const Index = () => {
       />
 
       <main className="container mx-auto px-4 py-4 space-y-4">
+        {/* Prayer Times Widget */}
+        {!selectedReciter && <PrayerTimesWidget />}
+
         {/* Tab Navigation or Back Button */}
         {selectedReciter ? (
           <div className="space-y-3">
