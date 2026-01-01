@@ -27,7 +27,7 @@ const PrayerTimeItem = ({ name, time, icon, isActive, isNext }: PrayerTimeItemPr
 );
 
 export function PrayerTimesWidget() {
-  const { prayerTimes, loading } = usePrayerTimes();
+  const { prayerTimes, loading, locationName } = usePrayerTimes();
   const [countdown, setCountdown] = useState<string>("");
 
   const { currentPrayer, nextPrayer, nextPrayerTime } = useMemo(() => {
@@ -179,7 +179,7 @@ export function PrayerTimesWidget() {
         </div>
         <div className="flex items-center gap-1 text-xs text-muted-foreground">
           <MapPin className="w-3 h-3" />
-          <span>Lokasi Anda</span>
+          <span>{locationName}</span>
         </div>
       </div>
       
