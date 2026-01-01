@@ -168,7 +168,7 @@ const Index = () => {
         />
 
         {/* Content */}
-        <div className="space-y-3">
+        <div>
           {activeTab === "reciters" && !selectedReciter && (
             <>
               {isLoadingReciters ? (
@@ -178,16 +178,18 @@ const Index = () => {
                   <p>Tidak ada qari ditemukan</p>
                 </div>
               ) : (
-                filteredReciters.map((reciter) => (
-                  <ReciterCard
-                    key={reciter.id}
-                    reciter={reciter}
-                    onClick={() => handleReciterSelect(reciter)}
-                    isSelected={selectedReciter?.id === reciter.id}
-                    isFavorite={isReciterFavorite(reciter.id)}
-                    onToggleFavorite={() => toggleReciterFavorite(reciter.id)}
-                  />
-                ))
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {filteredReciters.map((reciter) => (
+                    <ReciterCard
+                      key={reciter.id}
+                      reciter={reciter}
+                      onClick={() => handleReciterSelect(reciter)}
+                      isSelected={selectedReciter?.id === reciter.id}
+                      isFavorite={isReciterFavorite(reciter.id)}
+                      onToggleFavorite={() => toggleReciterFavorite(reciter.id)}
+                    />
+                  ))}
+                </div>
               )}
             </>
           )}

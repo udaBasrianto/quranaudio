@@ -1,6 +1,6 @@
-import { usePrayerTimes, PrayerTimes } from "@/hooks/usePrayerTimes";
-import { Clock, Sun, Sunrise, Sunset, Moon, MapPin, Loader2 } from "lucide-react";
-import { useMemo } from "react";
+import { usePrayerTimes } from "@/hooks/usePrayerTimes";
+import { Clock, Sun, Sunrise, Sunset, Moon, MapPin, Loader2, Timer } from "lucide-react";
+import { useMemo, useState, useEffect } from "react";
 
 interface PrayerTimeItemProps {
   name: string;
@@ -28,9 +28,10 @@ const PrayerTimeItem = ({ name, time, icon, isActive, isNext }: PrayerTimeItemPr
 
 export function PrayerTimesWidget() {
   const { prayerTimes, loading } = usePrayerTimes();
+  const [countdown, setCountdown] = useState<string>("");
 
-  const { currentPrayer, nextPrayer } = useMemo(() => {
-    if (!prayerTimes) return { currentPrayer: null, nextPrayer: null };
+  const { currentPrayer, nextPrayer, nextPrayerTime } = useMemo(() => {
+    if (!prayerTimes) return { currentPrayer: null, nextPrayer: null, nextPrayerTime: null };
 
     const now = new Date();
     const currentMinutes = now.getHours() * 60 + now.getMinutes();
@@ -51,6 +52,7 @@ export function PrayerTimesWidget() {
 
     let current: string | null = null;
     let next: string | null = null;
+    let nextTime: string | null = null;
 
     for (let i = 0; i < prayers.length; i++) {
       const prayerMinutes = parseTime(prayers[i].time);
@@ -59,6 +61,7 @@ export function PrayerTimesWidget() {
       if (currentMinutes >= prayerMinutes && currentMinutes < nextPrayerMinutes) {
         current = prayers[i].name;
         next = prayers[(i + 1) % prayers.length].name;
+        nextTime = prayers[(i + 1) % prayers.length].time;
         break;
       }
     }
@@ -67,10 +70,43 @@ export function PrayerTimesWidget() {
     if (!current) {
       current = "Isha";
       next = "Fajr";
+      nextTime = prayerTimes.Fajr;
     }
 
-    return { currentPrayer: current, nextPrayer: next };
+    return { currentPrayer: current, nextPrayer: next, nextPrayerTime: nextTime };
   }, [prayerTimes]);
+
+  // Countdown timer
+  useEffect(() => {
+    if (!nextPrayerTime) return;
+
+    const calculateCountdown = () => {
+      const now = new Date();
+      const [hours, minutes] = nextPrayerTime.split(":").map(Number);
+      
+      let targetTime = new Date();
+      targetTime.setHours(hours, minutes, 0, 0);
+
+      // If target time is before now, it's tomorrow
+      if (targetTime <= now) {
+        targetTime.setDate(targetTime.getDate() + 1);
+      }
+
+      const diff = targetTime.getTime() - now.getTime();
+      const diffHours = Math.floor(diff / (1000 * 60 * 60));
+      const diffMinutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const diffSeconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+      return `${diffHours.toString().padStart(2, "0")}:${diffMinutes.toString().padStart(2, "0")}:${diffSeconds.toString().padStart(2, "0")}`;
+    };
+
+    setCountdown(calculateCountdown());
+    const interval = setInterval(() => {
+      setCountdown(calculateCountdown());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [nextPrayerTime]);
 
   const getPrayerIcon = (name: string) => {
     const iconClass = "w-4 h-4";
@@ -160,11 +196,13 @@ export function PrayerTimesWidget() {
         ))}
       </div>
       
-      {nextPrayer && (
-        <div className="mt-3 text-center">
-          <p className="text-xs text-muted-foreground">
-            Shalat berikutnya: <span className="font-medium text-primary">{getPrayerNameIndonesian(nextPrayer)}</span>
-          </p>
+      {nextPrayer && countdown && (
+        <div className="mt-3 bg-primary/10 rounded-lg p-3 text-center">
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <Timer className="w-4 h-4 text-primary" />
+            <span className="text-xs text-muted-foreground">Menuju {getPrayerNameIndonesian(nextPrayer)}</span>
+          </div>
+          <p className="text-2xl font-bold text-primary font-mono">{countdown}</p>
         </div>
       )}
     </div>
