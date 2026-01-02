@@ -1,7 +1,18 @@
-import { BookOpen, Moon, Sun, Bookmark, Search } from "lucide-react";
+import { BookOpen, Moon, Sun, Bookmark, Search, Shield, LogIn, LogOut } from "lucide-react";
 import { ThemeColorPicker } from "./ThemeColorPicker";
 import { ThemeColor, FontSize, AutoNightMode } from "@/hooks/useTheme";
 import type { PrayerTimes } from "@/hooks/usePrayerTimes";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 interface HeaderProps {
   theme: "light" | "dark";
@@ -40,6 +51,13 @@ export function Header({
   onCustomNightEndChange,
   prayerTimes,
 }: HeaderProps) {
+  const navigate = useNavigate();
+  const { user, isAdmin, signOut } = useAuth();
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
   return (
     <header className="sticky top-0 z-40 bg-primary text-primary-foreground shadow-lg">
       <div className="container mx-auto px-4 py-4">
@@ -97,6 +115,45 @@ export function Header({
               onCustomNightEndChange={onCustomNightEndChange}
               prayerTimes={prayerTimes}
             />
+            
+            {/* User Menu */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="w-10 h-10 rounded-full bg-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/30 transition-colors">
+                    <Avatar className="w-8 h-8">
+                      <AvatarFallback className="bg-primary-foreground/30 text-primary-foreground text-sm">
+                        {user.email?.charAt(0).toUpperCase() || "U"}
+                      </AvatarFallback>
+                    </Avatar>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <div className="px-2 py-1.5 text-sm text-muted-foreground truncate">
+                    {user.email}
+                  </div>
+                  <DropdownMenuSeparator />
+                  {isAdmin && (
+                    <DropdownMenuItem onClick={() => navigate("/admin")}>
+                      <Shield className="w-4 h-4 mr-2" />
+                      Dashboard Admin
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Keluar
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <button
+                onClick={() => navigate("/auth")}
+                className="w-10 h-10 rounded-full bg-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/30 transition-colors"
+                aria-label="Masuk"
+              >
+                <LogIn className="w-5 h-5" />
+              </button>
+            )}
           </div>
         </div>
       </div>
