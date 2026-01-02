@@ -79,6 +79,13 @@ export function PrayerTimesWidget() {
     return { currentPrayer: current, nextPrayer: next, nextPrayerTime: nextTime };
   }, [prayerTimes]);
 
+  // Auto-show picker if GPS fails and no manual location
+  useEffect(() => {
+    if (gpsError && !manualLocation) {
+      setShowLocationPicker(true);
+    }
+  }, [gpsError, manualLocation]);
+
   // Countdown timer
   useEffect(() => {
     if (!nextPrayerTime) return;
@@ -173,12 +180,6 @@ export function PrayerTimesWidget() {
     { name: "Isha", time: prayerTimes.Isha },
   ];
 
-  // Auto-show picker if GPS fails and no manual location
-  useEffect(() => {
-    if (gpsError && !manualLocation) {
-      setShowLocationPicker(true);
-    }
-  }, [gpsError, manualLocation]);
 
   if (showLocationPicker) {
     return (
