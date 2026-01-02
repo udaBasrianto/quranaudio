@@ -157,6 +157,7 @@ export function PrayerTimesWidget() {
     }
   };
 
+  // Early returns moved after all hooks
   if (loading) {
     return (
       <div className="bg-card border border-border rounded-xl p-4 mb-4">
@@ -165,6 +166,19 @@ export function PrayerTimesWidget() {
           <span className="text-sm">Memuat waktu shalat...</span>
         </div>
       </div>
+    );
+  }
+
+  if (showLocationPicker) {
+    return (
+      <LocationPicker
+        onLocationSelect={(loc) => {
+          setManualLocation(loc);
+          setShowLocationPicker(false);
+        }}
+        currentLocation={manualLocation}
+        onClose={() => setShowLocationPicker(false)}
+      />
     );
   }
 
@@ -179,20 +193,6 @@ export function PrayerTimesWidget() {
     { name: "Maghrib", time: prayerTimes.Maghrib },
     { name: "Isha", time: prayerTimes.Isha },
   ];
-
-
-  if (showLocationPicker) {
-    return (
-      <LocationPicker
-        onLocationSelect={(loc) => {
-          setManualLocation(loc);
-          setShowLocationPicker(false);
-        }}
-        currentLocation={manualLocation}
-        onClose={() => setShowLocationPicker(false)}
-      />
-    );
-  }
 
   return (
     <div className="bg-card border border-border rounded-xl p-4 mb-4">
