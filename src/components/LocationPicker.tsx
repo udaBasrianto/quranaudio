@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Select,
   SelectContent,
@@ -7,7 +7,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { MapPin, X, Check } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { MapPin, X, Check, Search } from "lucide-react";
 import { indonesiaLocations, Provinsi, KabupatenKota, Kecamatan } from "@/data/indonesiaLocations";
 
 export interface ManualLocation {
@@ -16,6 +17,15 @@ export interface ManualLocation {
   kecamatan: string;
   lat: number;
   lng: number;
+}
+
+interface SearchResult {
+  provinsi: string;
+  kabupatenKota: string;
+  kecamatan: string;
+  lat: number;
+  lng: number;
+  displayText: string;
 }
 
 interface LocationPickerProps {
@@ -28,9 +38,63 @@ export function LocationPicker({ onLocationSelect, currentLocation, onClose }: L
   const [selectedProvinsi, setSelectedProvinsi] = useState<string>(currentLocation?.provinsi || "");
   const [selectedKabKota, setSelectedKabKota] = useState<string>(currentLocation?.kabupatenKota || "");
   const [selectedKecamatan, setSelectedKecamatan] = useState<string>(currentLocation?.kecamatan || "");
+  
+  const [searchQuery, setSearchQuery] = useState("");
+  const [showSearchResults, setShowSearchResults] = useState(false);
 
   const [kabupatenKotaList, setKabupatenKotaList] = useState<KabupatenKota[]>([]);
   const [kecamatanList, setKecamatanList] = useState<Kecamatan[]>([]);
+
+  // Build flat list of all kecamatan for search
+  const allKecamatan = useMemo(() => {
+    const results: SearchResult[] = [];
+    indonesiaLocations.forEach((provinsi) => {
+      provinsi.kabupatenKota.forEach((kabKota) => {
+        kabKota.kecamatan.forEach((kec) => {
+          results.push({
+            provinsi: provinsi.name,
+            kabupatenKota: kabKota.name,
+            kecamatan: kec.name,
+            lat: kec.lat,
+            lng: kec.lng,
+            displayText: `${kec.name}, ${kabKota.name}, ${provinsi.name}`,
+          });
+        });
+      });
+    });
+    return results;
+  }, []);
+
+  // Filter search results
+  const searchResults = useMemo(() => {
+    if (!searchQuery || searchQuery.length < 2) return [];
+    const query = searchQuery.toLowerCase();
+    return allKecamatan
+      .filter((item) => 
+        item.kecamatan.toLowerCase().includes(query) ||
+        item.kabupatenKota.toLowerCase().includes(query) ||
+        item.provinsi.toLowerCase().includes(query)
+      )
+      .slice(0, 10); // Limit to 10 results
+  }, [searchQuery, allKecamatan]);
+
+  const handleSearchSelect = (result: SearchResult) => {
+    setSelectedProvinsi(result.provinsi);
+    setSelectedKabKota(result.kabupatenKota);
+    setSelectedKecamatan(result.kecamatan);
+    setSearchQuery("");
+    setShowSearchResults(false);
+    
+    // Update kabupaten and kecamatan lists
+    const provinsi = indonesiaLocations.find((p) => p.name === result.provinsi);
+    if (provinsi) {
+      setKabupatenKotaList(provinsi.kabupatenKota);
+      const kabKota = provinsi.kabupatenKota.find((k) => k.name === result.kabupatenKota);
+      if (kabKota) {
+        setKecamatanList(kabKota.kecamatan);
+      }
+    }
+  };
 
   useEffect(() => {
     if (selectedProvinsi) {
@@ -96,6 +160,46 @@ export function LocationPicker({ onLocationSelect, currentLocation, onClose }: L
       </div>
 
       <div className="space-y-3">
+        {/* Search Input */}
+        <div className="relative">
+          <label className="text-xs text-muted-foreground mb-1 block">Cari Lokasi</label>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Ketik nama kecamatan, kota, atau provinsi..."
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowSearchResults(true);
+              }}
+              onFocus={() => setShowSearchResults(true)}
+              className="pl-9"
+            />
+          </div>
+          {showSearchResults && searchResults.length > 0 && (
+            <div className="absolute z-50 w-full mt-1 bg-popover border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+              {searchResults.map((result, index) => (
+                <button
+                  key={`${result.provinsi}-${result.kabupatenKota}-${result.kecamatan}-${index}`}
+                  className="w-full px-3 py-2 text-left text-sm hover:bg-accent transition-colors border-b border-border/50 last:border-b-0"
+                  onClick={() => handleSearchSelect(result)}
+                >
+                  <span className="font-medium text-foreground">{result.kecamatan}</span>
+                  <span className="text-muted-foreground text-xs block">
+                    {result.kabupatenKota}, {result.provinsi}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="flex-1 h-px bg-border" />
+          <span>atau pilih manual</span>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+
         <div>
           <label className="text-xs text-muted-foreground mb-1 block">Provinsi</label>
           <Select value={selectedProvinsi} onValueChange={setSelectedProvinsi}>
