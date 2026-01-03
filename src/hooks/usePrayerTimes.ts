@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 
 export interface PrayerTimes {
+  Imsak: string;
   Fajr: string;
   Sunrise: string;
   Dhuhr: string;
@@ -30,12 +31,10 @@ export function usePrayerTimes() {
   const [gpsError, setGpsError] = useState(false);
 
   const fetchPrayerTimesForCoords = useCallback(async (latitude: number, longitude: number, locName?: string) => {
-    const today = new Date();
-    const date = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
 
     try {
       const response = await fetch(
-        `https://api.aladhan.com/v1/timings/${date}?latitude=${latitude}&longitude=${longitude}&method=20`
+        `https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}&method=11`
       );
       const data = await response.json();
 
@@ -49,6 +48,7 @@ export function usePrayerTimes() {
     } catch (error) {
       console.log("Could not fetch prayer times from API");
       setPrayerTimes({
+        Imsak: "04:15",
         Fajr: "04:30",
         Sunrise: "05:45",
         Dhuhr: "12:00",
@@ -89,7 +89,7 @@ export function usePrayerTimes() {
 
         // Fetch prayer times and location name in parallel
         const [prayerResponse, geoResponse] = await Promise.all([
-          fetch(`https://api.aladhan.com/v1/timings/${new Date().getDate()}-${new Date().getMonth() + 1}-${new Date().getFullYear()}?latitude=${latitude}&longitude=${longitude}&method=20`),
+          fetch(`https://api.aladhan.com/v1/timings?latitude=${latitude}&longitude=${longitude}&method=11`),
           fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10`)
         ]);
 
@@ -109,18 +109,10 @@ export function usePrayerTimes() {
           // Keep default location name if geocoding fails
         }
       } catch (error) {
-        console.log("GPS not available, please select location manually");
+        console.log("GPS not available, falling back to Padang");
         setGpsError(true);
-        // Default times if geolocation fails
-        setPrayerTimes({
-          Fajr: "04:30",
-          Sunrise: "05:45",
-          Dhuhr: "12:00",
-          Asr: "15:15",
-          Maghrib: "18:00",
-          Isha: "19:15",
-        });
-        setLocationName("Pilih Lokasi");
+        // Fallback to Padang: Lat: -0.9492, Lon: 100.3543
+        await fetchPrayerTimesForCoords(-0.9492, 100.3543, "Padang (Default)");
       } finally {
         setLoading(false);
       }
