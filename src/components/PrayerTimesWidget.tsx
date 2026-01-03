@@ -45,6 +45,7 @@ export function PrayerTimesWidget() {
     };
 
     const prayers = [
+      { name: "Imsak", time: prayerTimes.Imsak },
       { name: "Fajr", time: prayerTimes.Fajr },
       { name: "Sunrise", time: prayerTimes.Sunrise },
       { name: "Dhuhr", time: prayerTimes.Dhuhr },
@@ -121,6 +122,8 @@ export function PrayerTimesWidget() {
   const getPrayerIcon = (name: string) => {
     const iconClass = "w-4 h-4";
     switch (name) {
+      case "Imsak":
+        return <Moon className={iconClass} />;
       case "Fajr":
         return <Sunrise className={iconClass} />;
       case "Sunrise":
@@ -140,6 +143,8 @@ export function PrayerTimesWidget() {
 
   const getPrayerNameIndonesian = (name: string) => {
     switch (name) {
+      case "Imsak":
+        return "Imsak";
       case "Fajr":
         return "Subuh";
       case "Sunrise":
@@ -187,6 +192,7 @@ export function PrayerTimesWidget() {
   }
 
   const prayers = [
+    { name: "Imsak", time: prayerTimes.Imsak },
     { name: "Fajr", time: prayerTimes.Fajr },
     { name: "Dhuhr", time: prayerTimes.Dhuhr },
     { name: "Asr", time: prayerTimes.Asr },
@@ -213,7 +219,7 @@ export function PrayerTimesWidget() {
         </Button>
       </div>
       
-      <div className="grid grid-cols-5 gap-2">
+      <div className="grid grid-cols-6 gap-1.5">
         {prayers.map((prayer) => (
           <PrayerTimeItem
             key={prayer.name}
