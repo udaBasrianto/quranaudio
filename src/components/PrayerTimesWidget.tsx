@@ -1,8 +1,9 @@
 import { usePrayerTimes } from "@/hooks/usePrayerTimes";
-import { Clock, Sun, Sunrise, Sunset, Moon, MapPin, Loader2, Timer, Settings } from "lucide-react";
+import { Clock, Sun, Sunrise, Sunset, Moon, MapPin, Loader2, Timer, Settings, Bell, BellOff, Calendar } from "lucide-react";
 import { useMemo, useState, useEffect } from "react";
 import { LocationPicker } from "./LocationPicker";
 import { Button } from "./ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
 interface PrayerTimeItemProps {
   name: string;
@@ -29,7 +30,7 @@ const PrayerTimeItem = ({ name, time, icon, isActive, isNext }: PrayerTimeItemPr
 );
 
 export function PrayerTimesWidget() {
-  const { prayerTimes, loading, locationName, gpsError, manualLocation, setManualLocation } = usePrayerTimes();
+  const { prayerTimes, hijriDate, loading, locationName, gpsError, manualLocation, setManualLocation, notificationEnabled, toggleNotification } = usePrayerTimes();
   const [countdown, setCountdown] = useState<string>("");
   const [showLocationPicker, setShowLocationPicker] = useState(false);
 
@@ -200,23 +201,67 @@ export function PrayerTimesWidget() {
     { name: "Isha", time: prayerTimes.Isha },
   ];
 
+  const hijriMonthNames: Record<number, string> = {
+    1: "Muharram",
+    2: "Safar",
+    3: "Rabiul Awal",
+    4: "Rabiul Akhir",
+    5: "Jumadil Awal",
+    6: "Jumadil Akhir",
+    7: "Rajab",
+    8: "Sya'ban",
+    9: "Ramadhan",
+    10: "Syawal",
+    11: "Dzulqa'dah",
+    12: "Dzulhijjah",
+  };
+
   return (
     <div className="bg-card border border-border rounded-xl p-4 mb-4">
+      {/* Hijri Date */}
+      {hijriDate && (
+        <div className="flex items-center justify-center gap-2 mb-3 pb-3 border-b border-border">
+          <Calendar className="w-4 h-4 text-primary" />
+          <span className="text-sm font-medium text-foreground">
+            {hijriDate.day} {hijriMonthNames[hijriDate.month.number] || hijriDate.month.en} {hijriDate.year} H
+          </span>
+        </div>
+      )}
+      
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Clock className="w-4 h-4 text-primary" />
           <h3 className="font-semibold text-foreground text-sm">Waktu Shalat</h3>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
-          onClick={() => setShowLocationPicker(true)}
-        >
-          <MapPin className="w-3 h-3 mr-1" />
-          <span className="max-w-24 truncate">{locationName}</span>
-          <Settings className="w-3 h-3 ml-1" />
-        </Button>
+        <div className="flex items-center gap-1">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`h-6 w-6 p-0 ${notificationEnabled ? "text-primary" : "text-muted-foreground"}`}
+                  onClick={toggleNotification}
+                >
+                  {notificationEnabled ? <Bell className="w-3.5 h-3.5" /> : <BellOff className="w-3.5 h-3.5" />}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{notificationEnabled ? "Matikan notifikasi" : "Aktifkan notifikasi"}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground"
+            onClick={() => setShowLocationPicker(true)}
+          >
+            <MapPin className="w-3 h-3 mr-1" />
+            <span className="max-w-24 truncate">{locationName}</span>
+            <Settings className="w-3 h-3 ml-1" />
+          </Button>
+        </div>
       </div>
       
       <div className="grid grid-cols-6 gap-1.5">

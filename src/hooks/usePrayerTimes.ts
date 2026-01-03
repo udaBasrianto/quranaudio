@@ -10,6 +10,14 @@ export interface PrayerTimes {
   Isha: string;
 }
 
+export interface HijriDate {
+  day: string;
+  month: { en: string; ar: string; number: number };
+  year: string;
+  designation: { abbreviated: string; expanded: string };
+  weekday: { en: string; ar: string };
+}
+
 export interface ManualLocation {
   provinsi: string;
   kabupatenKota: string;
@@ -19,9 +27,11 @@ export interface ManualLocation {
 }
 
 const MANUAL_LOCATION_KEY = "manual_prayer_location";
+const NOTIFICATION_KEY = "prayer_notification_enabled";
 
 export function usePrayerTimes() {
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
+  const [hijriDate, setHijriDate] = useState<HijriDate | null>(null);
   const [loading, setLoading] = useState(true);
   const [locationName, setLocationName] = useState<string>("Lokasi Anda");
   const [manualLocation, setManualLocation] = useState<ManualLocation | null>(() => {
@@ -29,6 +39,9 @@ export function usePrayerTimes() {
     return saved ? JSON.parse(saved) : null;
   });
   const [gpsError, setGpsError] = useState(false);
+  const [notificationEnabled, setNotificationEnabled] = useState(() => {
+    return localStorage.getItem(NOTIFICATION_KEY) === "true";
+  });
 
   const fetchPrayerTimesForCoords = useCallback(async (latitude: number, longitude: number, locName?: string) => {
 
@@ -40,6 +53,9 @@ export function usePrayerTimes() {
 
       if (data.code === 200) {
         setPrayerTimes(data.data.timings);
+        if (data.data.date?.hijri) {
+          setHijriDate(data.data.date.hijri);
+        }
       }
 
       if (locName) {
@@ -97,6 +113,9 @@ export function usePrayerTimes() {
         
         if (prayerData.code === 200) {
           setPrayerTimes(prayerData.data.timings);
+          if (prayerData.data.date?.hijri) {
+            setHijriDate(prayerData.data.date.hijri);
+          }
         }
 
         try {
@@ -153,13 +172,100 @@ export function usePrayerTimes() {
     return false;
   };
 
+  const requestNotificationPermission = useCallback(async () => {
+    if (!("Notification" in window)) {
+      console.log("Browser tidak mendukung notifikasi");
+      return false;
+    }
+
+    if (Notification.permission === "granted") {
+      return true;
+    }
+
+    if (Notification.permission !== "denied") {
+      const permission = await Notification.requestPermission();
+      return permission === "granted";
+    }
+
+    return false;
+  }, []);
+
+  const toggleNotification = useCallback(async () => {
+    if (notificationEnabled) {
+      setNotificationEnabled(false);
+      localStorage.setItem(NOTIFICATION_KEY, "false");
+    } else {
+      const granted = await requestNotificationPermission();
+      if (granted) {
+        setNotificationEnabled(true);
+        localStorage.setItem(NOTIFICATION_KEY, "true");
+      }
+    }
+  }, [notificationEnabled, requestNotificationPermission]);
+
+  // Schedule notifications for prayer times
+  useEffect(() => {
+    if (!notificationEnabled || !prayerTimes) return;
+
+    const prayerNames: Record<string, string> = {
+      Imsak: "Imsak",
+      Fajr: "Subuh",
+      Dhuhr: "Dzuhur",
+      Asr: "Ashar",
+      Maghrib: "Maghrib",
+      Isha: "Isya",
+    };
+
+    const timeouts: NodeJS.Timeout[] = [];
+
+    const scheduleNotification = (prayerKey: string, prayerTime: string) => {
+      const [hours, minutes] = prayerTime.split(":").map(Number);
+      const now = new Date();
+      const prayerDate = new Date();
+      prayerDate.setHours(hours, minutes, 0, 0);
+
+      // If prayer time has passed today, skip
+      if (prayerDate <= now) return;
+
+      const delay = prayerDate.getTime() - now.getTime();
+      
+      const timeout = setTimeout(() => {
+        if (Notification.permission === "granted") {
+          new Notification(`Waktu ${prayerNames[prayerKey]}`, {
+            body: `Sekarang waktu sholat ${prayerNames[prayerKey]} (${prayerTime})`,
+            icon: "/favicon.ico",
+            tag: `prayer-${prayerKey}`,
+          });
+        }
+      }, delay);
+
+      timeouts.push(timeout);
+    };
+
+    // Schedule for main prayers (excluding Sunrise)
+    const mainPrayers = ["Imsak", "Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+    mainPrayers.forEach((key) => {
+      const time = prayerTimes[key as keyof PrayerTimes];
+      if (time) {
+        scheduleNotification(key, time);
+      }
+    });
+
+    return () => {
+      timeouts.forEach(clearTimeout);
+    };
+  }, [notificationEnabled, prayerTimes]);
+
   return { 
     prayerTimes, 
+    hijriDate,
     loading, 
     isNightTime, 
     locationName, 
     gpsError, 
     manualLocation, 
-    setManualLocation: setManualLocationAndSave 
+    setManualLocation: setManualLocationAndSave,
+    notificationEnabled,
+    toggleNotification,
   };
 }
