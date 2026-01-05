@@ -17,7 +17,8 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { useTheme, FontSize } from "@/hooks/useTheme";
 import { Reciter, Surah, Moshaf } from "@/types/quran";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Hand, Sun, ChevronDown, ChevronUp } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<"reciters" | "surahs">("reciters");
@@ -31,6 +32,8 @@ const Index = () => {
   const [ayahSearchQuery, setAyahSearchQuery] = useState("");
   const [currentAyahIndex, setCurrentAyahIndex] = useState<number | null>(null);
   const [totalAyahs, setTotalAyahs] = useState<number>(0);
+  const [showDzikirCounter, setShowDzikirCounter] = useState(false);
+  const [showDzikirPagiPetang, setShowDzikirPagiPetang] = useState(false);
 
   const { data: recitersData, isLoading: isLoadingReciters } = useReciters();
   const { data: surahsData, isLoading: isLoadingSurahs } = useSurahs();
@@ -134,12 +137,38 @@ const Index = () => {
       />
 
       <main className="container mx-auto px-4 py-4 space-y-4">
-        {/* Prayer Times Widget & Dzikir Counter */}
+        {/* Prayer Times Widget & Dzikir */}
         {!selectedReciter && (
           <>
             <PrayerTimesWidget />
-            <DzikirCounter />
-            <DzikirPagiPetang />
+            
+            {/* Dzikir Counter Toggle */}
+            <Button
+              variant="outline"
+              className="w-full justify-between"
+              onClick={() => setShowDzikirCounter(!showDzikirCounter)}
+            >
+              <div className="flex items-center gap-2">
+                <Hand className="w-4 h-4" />
+                <span>Dzikir Counter</span>
+              </div>
+              {showDzikirCounter ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </Button>
+            {showDzikirCounter && <DzikirCounter />}
+            
+            {/* Dzikir Pagi Petang Toggle */}
+            <Button
+              variant="outline"
+              className="w-full justify-between"
+              onClick={() => setShowDzikirPagiPetang(!showDzikirPagiPetang)}
+            >
+              <div className="flex items-center gap-2">
+                <Sun className="w-4 h-4" />
+                <span>Dzikir Pagi & Petang</span>
+              </div>
+              {showDzikirPagiPetang ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </Button>
+            {showDzikirPagiPetang && <DzikirPagiPetang />}
           </>
         )}
 
