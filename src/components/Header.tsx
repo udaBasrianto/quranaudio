@@ -1,9 +1,10 @@
-import { BookOpen, Moon, Sun, Bookmark, Search, Shield, LogIn, LogOut } from "lucide-react";
+import { BookOpen, Moon, Sun, Bookmark, Search, Shield, LogIn, LogOut, Download } from "lucide-react";
 import { ThemeColorPicker } from "./ThemeColorPicker";
 import { ThemeColor, FontSize, AutoNightMode } from "@/hooks/useTheme";
 import type { PrayerTimes } from "@/hooks/usePrayerTimes";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { usePWAInstall } from "@/hooks/usePWAInstall";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -13,6 +14,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface HeaderProps {
   theme: "light" | "dark";
@@ -53,6 +60,7 @@ export function Header({
 }: HeaderProps) {
   const navigate = useNavigate();
   const { user, isAdmin, signOut } = useAuth();
+  const { isInstallable, installApp } = usePWAInstall();
 
   const handleSignOut = async () => {
     await signOut();
@@ -72,6 +80,24 @@ export function Header({
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {isInstallable && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      onClick={installApp}
+                      className="w-10 h-10 rounded-full bg-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/30 transition-colors animate-pulse"
+                      aria-label="Install aplikasi"
+                    >
+                      <Download className="w-5 h-5" />
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Install ke Home Screen</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
             <button
               onClick={onOpenSearch}
               className="w-10 h-10 rounded-full bg-primary-foreground/20 flex items-center justify-center hover:bg-primary-foreground/30 transition-colors"
