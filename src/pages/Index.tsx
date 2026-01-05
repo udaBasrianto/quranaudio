@@ -17,7 +17,7 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { useTheme, FontSize } from "@/hooks/useTheme";
 import { Reciter, Surah, Moshaf } from "@/types/quran";
-import { ArrowLeft, Hand, Sun, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowLeft, Hand, Sun, Clock, ChevronDown, ChevronUp, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
@@ -34,6 +34,7 @@ const Index = () => {
   const [totalAyahs, setTotalAyahs] = useState<number>(0);
   const [showDzikirCounter, setShowDzikirCounter] = useState(false);
   const [showDzikirPagiPetang, setShowDzikirPagiPetang] = useState(false);
+  const [showPrayerTimes, setShowPrayerTimes] = useState(false);
 
   const { data: recitersData, isLoading: isLoadingReciters } = useReciters();
   const { data: surahsData, isLoading: isLoadingSurahs } = useSurahs();
@@ -140,7 +141,19 @@ const Index = () => {
         {/* Prayer Times Widget & Dzikir */}
         {!selectedReciter && (
           <>
-            <PrayerTimesWidget />
+            {/* Prayer Times Toggle */}
+            <Button
+              variant="outline"
+              className="w-full justify-between"
+              onClick={() => setShowPrayerTimes(!showPrayerTimes)}
+            >
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4" />
+                <span>Waktu Sholat</span>
+              </div>
+              {showPrayerTimes ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </Button>
+            {showPrayerTimes && <PrayerTimesWidget />}
             
             {/* Dzikir Counter Toggle */}
             <Button
@@ -233,7 +246,21 @@ const Index = () => {
 
           {(activeTab === "surahs" || selectedReciter) && (
             <>
-              {isLoadingSurahs ? (
+              {!selectedReciter ? (
+                <div className="text-center py-12 bg-card rounded-lg border">
+                  <Users className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground font-medium">Pilih Qari Terlebih Dahulu</p>
+                  <p className="text-sm text-muted-foreground mt-2">Klik tab "Qari" untuk memilih qari yang akan membacakan surah</p>
+                  <Button 
+                    variant="outline" 
+                    className="mt-4"
+                    onClick={() => setActiveTab("reciters")}
+                  >
+                    <Users className="w-4 h-4 mr-2" />
+                    Pilih Qari
+                  </Button>
+                </div>
+              ) : isLoadingSurahs ? (
                 <SurahSkeleton />
               ) : filteredSurahs.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
@@ -246,7 +273,7 @@ const Index = () => {
                     surah={surah}
                     onClick={() => handleSurahSelect(surah)}
                     isPlaying={currentSurah?.id === surah.id}
-                    isDisabled={selectedReciter ? !availableSurahs.includes(surah.id) : false}
+                    isDisabled={!availableSurahs.includes(surah.id)}
                     isFavorite={isSurahFavorite(surah.id)}
                     onToggleFavorite={() => toggleSurahFavorite(surah.id)}
                   />
