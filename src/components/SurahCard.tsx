@@ -1,5 +1,5 @@
 import { Surah } from "@/types/quran";
-import { Play, BookOpen, Heart } from "lucide-react";
+import { Play, BookOpen, Heart, Download, Check, Loader2, Trash2 } from "lucide-react";
 
 interface SurahCardProps {
   surah: Surah;
@@ -8,6 +8,10 @@ interface SurahCardProps {
   isDisabled?: boolean;
   isFavorite?: boolean;
   onToggleFavorite?: (e: React.MouseEvent) => void;
+  isDownloaded?: boolean;
+  downloadProgress?: number;
+  onDownload?: (e: React.MouseEvent) => void;
+  onDeleteDownload?: (e: React.MouseEvent) => void;
 }
 
 export function SurahCard({ 
@@ -17,7 +21,13 @@ export function SurahCard({
   isDisabled,
   isFavorite,
   onToggleFavorite,
+  isDownloaded,
+  downloadProgress,
+  onDownload,
+  onDeleteDownload,
 }: SurahCardProps) {
+  const isDownloading = downloadProgress !== undefined && downloadProgress < 100;
+
   return (
     <button
       onClick={onClick}
@@ -45,8 +55,53 @@ export function SurahCard({
             <span>{surah.makkia === 1 ? "Makkiyah" : "Madaniyah"}</span>
             <span>•</span>
             <span>Hal. {surah.start_page}-{surah.end_page}</span>
+            {isDownloaded && (
+              <>
+                <span>•</span>
+                <span className="text-primary flex items-center gap-1">
+                  <Check className="w-3 h-3" />
+                  Offline
+                </span>
+              </>
+            )}
           </div>
         </div>
+        
+        {/* Download button */}
+        {onDownload && !isDisabled && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (isDownloaded && onDeleteDownload) {
+                onDeleteDownload(e);
+              } else if (!isDownloading) {
+                onDownload(e);
+              }
+            }}
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
+              isDownloaded 
+                ? "hover:bg-destructive/10 text-primary" 
+                : isDownloading
+                ? "bg-primary/10 text-primary"
+                : "hover:bg-primary/10 text-muted-foreground"
+            }`}
+            title={isDownloaded ? "Hapus download" : isDownloading ? `Downloading ${downloadProgress}%` : "Download untuk offline"}
+          >
+            {isDownloading ? (
+              <div className="relative">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span className="absolute -bottom-4 left-1/2 -translate-x-1/2 text-[10px] font-medium">
+                  {downloadProgress}%
+                </span>
+              </div>
+            ) : isDownloaded ? (
+              <Trash2 className="w-4 h-4" />
+            ) : (
+              <Download className="w-4 h-4" />
+            )}
+          </button>
+        )}
+        
         {onToggleFavorite && !isDisabled && (
           <button
             onClick={(e) => {

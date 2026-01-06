@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, X, BookOpen, Repeat, Repeat1, Shuffle } from "lucide-react";
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, X, BookOpen, Repeat, Repeat1, Shuffle, WifiOff } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Surah, Reciter, Moshaf } from "@/types/quran";
 import { getSurahAudioUrl } from "@/lib/api";
@@ -16,6 +16,8 @@ interface AudioPlayerProps {
   onClose: () => void;
   onShowText: () => void;
   onTimeUpdate?: (currentTime: number, duration: number) => void;
+  getOfflineAudioUrl?: (reciterId: number, moshafId: number, surahId: number) => Promise<string | null>;
+  isOffline?: boolean;
 }
 
 export function AudioPlayer({
@@ -28,6 +30,8 @@ export function AudioPlayer({
   onClose,
   onShowText,
   onTimeUpdate,
+  getOfflineAudioUrl,
+  isOffline,
 }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -38,25 +42,50 @@ export function AudioPlayer({
   const [isLoading, setIsLoading] = useState(false);
   const [repeatMode, setRepeatMode] = useState<RepeatMode>("off");
   const [isShuffle, setIsShuffle] = useState(false);
+  const [isUsingOffline, setIsUsingOffline] = useState(false);
 
   useEffect(() => {
-    if (!surah || !moshaf) return;
+    if (!surah || !moshaf || !reciter) return;
     
     const audio = audioRef.current;
     if (!audio) return;
 
-    const audioUrl = getSurahAudioUrl(moshaf.server, surah.id);
-    audio.src = audioUrl;
-    setIsLoading(true);
-    audio.load();
+    const loadAudio = async () => {
+      setIsLoading(true);
+      
+      // Try offline audio first
+      if (getOfflineAudioUrl) {
+        const offlineUrl = await getOfflineAudioUrl(reciter.id, moshaf.id, surah.id);
+        if (offlineUrl) {
+          audio.src = offlineUrl;
+          setIsUsingOffline(true);
+          audio.load();
+          audio.play().then(() => {
+            setIsPlaying(true);
+            setIsLoading(false);
+          }).catch(() => {
+            setIsLoading(false);
+          });
+          return;
+        }
+      }
+      
+      // Use online audio
+      const audioUrl = getSurahAudioUrl(moshaf.server, surah.id);
+      audio.src = audioUrl;
+      setIsUsingOffline(false);
+      audio.load();
+      
+      audio.play().then(() => {
+        setIsPlaying(true);
+        setIsLoading(false);
+      }).catch(() => {
+        setIsLoading(false);
+      });
+    };
     
-    audio.play().then(() => {
-      setIsPlaying(true);
-      setIsLoading(false);
-    }).catch(() => {
-      setIsLoading(false);
-    });
-  }, [surah, moshaf]);
+    loadAudio();
+  }, [surah, moshaf, reciter, getOfflineAudioUrl]);
 
   const getNextSurah = useCallback(() => {
     if (!surah) return null;
@@ -229,9 +258,16 @@ export function AudioPlayer({
         <div className="flex items-center gap-4">
           {/* Song info */}
           <div className="flex-1 min-w-0">
-            <h4 className="font-semibold text-foreground truncate text-sm">
-              {surah.name}
-            </h4>
+            <div className="flex items-center gap-2">
+              <h4 className="font-semibold text-foreground truncate text-sm">
+                {surah.name}
+              </h4>
+              {isUsingOffline && (
+                <span title="Mode Offline">
+                  <WifiOff className="w-3 h-3 text-primary flex-shrink-0" />
+                </span>
+              )}
+            </div>
             <p className="text-xs text-muted-foreground truncate">
               {reciter.name}
             </p>
