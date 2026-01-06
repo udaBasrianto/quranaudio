@@ -15,10 +15,12 @@ import { DzikirPagiPetang } from "@/components/DzikirPagiPetang";
 import { useReciters, useSurahs } from "@/hooks/useQuranData";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useBookmarks } from "@/hooks/useBookmarks";
+import { useOfflineAudio } from "@/hooks/useOfflineAudio";
 import { useTheme, FontSize } from "@/hooks/useTheme";
 import { Reciter, Surah, Moshaf } from "@/types/quran";
-import { ArrowLeft, Hand, Sun, Clock, ChevronDown, ChevronUp, Users } from "lucide-react";
+import { ArrowLeft, Hand, Sun, Clock, ChevronDown, ChevronUp, Users, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<"reciters" | "surahs">("reciters");
@@ -40,6 +42,14 @@ const Index = () => {
   const { data: surahsData, isLoading: isLoadingSurahs } = useSurahs();
   const { isReciterFavorite, isSurahFavorite, toggleReciterFavorite, toggleSurahFavorite } = useFavorites();
   const { bookmarks, isBookmarked, toggleBookmark, removeBookmark } = useBookmarks();
+  const { 
+    isDownloaded, 
+    getDownloadProgress, 
+    downloadAudio, 
+    getOfflineAudioUrl, 
+    deleteAudio,
+    getDownloadedCount 
+  } = useOfflineAudio();
   const { 
     theme, 
     toggleTheme, 
@@ -115,6 +125,33 @@ const Index = () => {
   const handleAyahsLoaded = useCallback((count: number) => {
     setTotalAyahs(count);
   }, []);
+
+  const handleDownloadSurah = useCallback(async (surah: Surah) => {
+    if (!selectedReciter || !selectedMoshaf) return;
+    
+    try {
+      await downloadAudio(
+        selectedReciter.id,
+        selectedMoshaf.id,
+        surah.id,
+        selectedMoshaf.server
+      );
+      toast.success(`${surah.name} berhasil didownload untuk offline`);
+    } catch (error) {
+      toast.error(`Gagal mendownload ${surah.name}`);
+    }
+  }, [selectedReciter, selectedMoshaf, downloadAudio]);
+
+  const handleDeleteDownload = useCallback(async (surah: Surah) => {
+    if (!selectedReciter || !selectedMoshaf) return;
+    
+    try {
+      await deleteAudio(selectedReciter.id, selectedMoshaf.id, surah.id);
+      toast.success(`Download ${surah.name} dihapus`);
+    } catch (error) {
+      toast.error(`Gagal menghapus download ${surah.name}`);
+    }
+  }, [selectedReciter, selectedMoshaf, deleteAudio]);
 
   return (
     <div className="min-h-screen bg-background pb-32">
@@ -197,9 +234,15 @@ const Index = () => {
             </button>
             <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
               <h2 className="font-semibold text-foreground">{selectedReciter.name}</h2>
-              <p className="text-sm text-muted-foreground">
-                {selectedMoshaf?.name} • {selectedMoshaf?.surah_total} Surah
-              </p>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>{selectedMoshaf?.name} • {selectedMoshaf?.surah_total} Surah</span>
+                {selectedMoshaf && getDownloadedCount(selectedReciter.id, selectedMoshaf.id) > 0 && (
+                  <span className="flex items-center gap-1 text-primary">
+                    <Download className="w-3 h-3" />
+                    {getDownloadedCount(selectedReciter.id, selectedMoshaf.id)} offline
+                  </span>
+                )}
+              </div>
             </div>
           </div>
         ) : (
@@ -276,6 +319,10 @@ const Index = () => {
                     isDisabled={!availableSurahs.includes(surah.id)}
                     isFavorite={isSurahFavorite(surah.id)}
                     onToggleFavorite={() => toggleSurahFavorite(surah.id)}
+                    isDownloaded={isDownloaded(selectedReciter.id, selectedMoshaf.id, surah.id)}
+                    downloadProgress={getDownloadProgress(selectedReciter.id, selectedMoshaf.id, surah.id)}
+                    onDownload={() => handleDownloadSurah(surah)}
+                    onDeleteDownload={() => handleDeleteDownload(surah)}
                   />
                 ))
               )}
@@ -364,6 +411,7 @@ const Index = () => {
           onClose={handleClosePlayer}
           onShowText={() => setShowTextViewer(true)}
           onTimeUpdate={handleTimeUpdate}
+          getOfflineAudioUrl={getOfflineAudioUrl}
         />
       )}
     </div>
