@@ -1,4 +1,5 @@
 import { BookOpen, Moon, Sun, Bookmark, Search, Shield, LogIn, LogOut, Download, Users } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { ThemeColorPicker } from "./ThemeColorPicker";
 import { ThemeColor, FontSize, AutoNightMode } from "@/hooks/useTheme";
 import type { PrayerTimes } from "@/hooks/usePrayerTimes";
@@ -71,6 +72,38 @@ export function Header({
     }
   };
 
+  // Animated Counter Component
+  const AnimatedCounter = ({ count }: { count: number }) => {
+    const [displayCount, setDisplayCount] = useState(count);
+    const [isAnimating, setIsAnimating] = useState(false);
+    const prevCountRef = useRef(count);
+
+    useEffect(() => {
+      if (prevCountRef.current !== count) {
+        setIsAnimating(true);
+        const timer = setTimeout(() => {
+          setDisplayCount(count);
+          setIsAnimating(false);
+        }, 150);
+        prevCountRef.current = count;
+        return () => clearTimeout(timer);
+      }
+    }, [count]);
+
+    return (
+      <div 
+        className={`flex items-center gap-1 px-2 py-1 rounded-full bg-primary-foreground/20 text-xs transition-all duration-300 ${
+          isAnimating ? 'scale-125 bg-primary-foreground/40' : 'scale-100'
+        }`}
+      >
+        <Users className="w-3 h-3" />
+        <span className={`transition-all duration-150 ${isAnimating ? 'opacity-0 scale-50' : 'opacity-100 scale-100'}`}>
+          {displayCount.toLocaleString()}
+        </span>
+      </div>
+    );
+  };
+
   const handleSignOut = async () => {
     await signOut();
   };
@@ -92,10 +125,7 @@ export function Header({
             {/* Install Count & Button */}
             <div className="flex items-center gap-1">
               {installCount > 0 && (
-                <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-primary-foreground/20 text-xs">
-                  <Users className="w-3 h-3" />
-                  <span>{installCount.toLocaleString()}</span>
-                </div>
+                <AnimatedCounter count={installCount} />
               )}
               {isInstallable && (
                 <TooltipProvider>
