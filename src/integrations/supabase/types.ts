@@ -41,6 +41,27 @@ export type Database = {
         }
         Relationships: []
       }
+      pwa_installations: {
+        Row: {
+          device_id: string
+          id: string
+          installed_at: string
+          user_agent: string | null
+        }
+        Insert: {
+          device_id: string
+          id?: string
+          installed_at?: string
+          user_agent?: string | null
+        }
+        Update: {
+          device_id?: string
+          id?: string
+          installed_at?: string
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
