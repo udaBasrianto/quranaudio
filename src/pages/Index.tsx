@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { Header } from "@/components/Header";
 import { TabNavigation } from "@/components/TabNavigation";
 import { SearchInput } from "@/components/SearchInput";
@@ -18,11 +19,12 @@ import { useBookmarks } from "@/hooks/useBookmarks";
 import { useOfflineAudio } from "@/hooks/useOfflineAudio";
 import { useTheme, FontSize } from "@/hooks/useTheme";
 import { Reciter, Surah, Moshaf } from "@/types/quran";
-import { ArrowLeft, Hand, Sun, Clock, ChevronDown, ChevronUp, Users, Download, DownloadCloud, Loader2 } from "lucide-react";
+import { ArrowLeft, Hand, Sun, Clock, ChevronDown, ChevronUp, Users, Download, DownloadCloud, Loader2, HardDrive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 const Index = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"reciters" | "surahs">("reciters");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedReciter, setSelectedReciter] = useState<Reciter | null>(null);
@@ -231,6 +233,18 @@ const Index = () => {
               {showDzikirPagiPetang ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </Button>
             {showDzikirPagiPetang && <DzikirPagiPetang />}
+
+            {/* Offline Storage Management */}
+            <Button
+              variant="outline"
+              className="w-full justify-between"
+              onClick={() => navigate("/offline-storage")}
+            >
+              <div className="flex items-center gap-2">
+                <HardDrive className="w-4 h-4" />
+                <span>Manajemen Storage Offline</span>
+              </div>
+            </Button>
           </>
         )}
 
