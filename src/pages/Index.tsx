@@ -18,7 +18,7 @@ import { useBookmarks } from "@/hooks/useBookmarks";
 import { useOfflineAudio } from "@/hooks/useOfflineAudio";
 import { useTheme, FontSize } from "@/hooks/useTheme";
 import { Reciter, Surah, Moshaf } from "@/types/quran";
-import { ArrowLeft, Hand, Sun, Clock, ChevronDown, ChevronUp, Users, Download } from "lucide-react";
+import { ArrowLeft, Hand, Sun, Clock, ChevronDown, ChevronUp, Users, Download, DownloadCloud, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -48,7 +48,9 @@ const Index = () => {
     downloadAudio, 
     getOfflineAudioUrl, 
     deleteAudio,
-    getDownloadedCount 
+    getDownloadedCount,
+    batchProgress,
+    downloadAllSurahs,
   } = useOfflineAudio();
   const { 
     theme, 
@@ -153,6 +155,16 @@ const Index = () => {
     }
   }, [selectedReciter, selectedMoshaf, deleteAudio]);
 
+  const handleDownloadAll = useCallback(async () => {
+    if (!selectedReciter || !selectedMoshaf) return;
+    try {
+      await downloadAllSurahs(selectedReciter.id, selectedMoshaf.id, availableSurahs, selectedMoshaf.server);
+      toast.success("Semua surah berhasil didownload!");
+    } catch (error) {
+      toast.error("Gagal mendownload beberapa surah");
+    }
+  }, [selectedReciter, selectedMoshaf, availableSurahs, downloadAllSurahs]);
+
   return (
     <div className="min-h-screen bg-background pb-32">
       <Header 
@@ -241,6 +253,43 @@ const Index = () => {
                     <Download className="w-3 h-3" />
                     {getDownloadedCount(selectedReciter.id, selectedMoshaf.id)} offline
                   </span>
+                )}
+              </div>
+              
+              {/* Download All Button */}
+              <div className="flex flex-col gap-2">
+                {batchProgress.downloading ? (
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="flex items-center gap-2 text-muted-foreground">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Mendownload {batchProgress.current}/{batchProgress.total} surah...
+                      </span>
+                      <span className="text-primary font-medium">
+                        {Math.round((batchProgress.current / batchProgress.total) * 100)}%
+                      </span>
+                    </div>
+                    <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-primary rounded-full transition-all duration-300"
+                        style={{ width: `${(batchProgress.current / batchProgress.total) * 100}%` }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={handleDownloadAll}
+                    disabled={getDownloadedCount(selectedReciter.id, selectedMoshaf!.id) >= availableSurahs.length}
+                  >
+                    <DownloadCloud className="w-4 h-4 mr-2" />
+                    {getDownloadedCount(selectedReciter.id, selectedMoshaf!.id) >= availableSurahs.length
+                      ? "Semua surah sudah didownload"
+                      : `Download Semua Surah (${availableSurahs.length - getDownloadedCount(selectedReciter.id, selectedMoshaf!.id)} tersisa)`
+                    }
+                  </Button>
                 )}
               </div>
             </div>

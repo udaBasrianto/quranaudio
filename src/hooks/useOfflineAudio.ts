@@ -227,6 +227,37 @@ export function useOfflineAudio() {
     return count;
   }, [downloadedSurahs]);
 
+  const [batchProgress, setBatchProgress] = useState<{ current: number; total: number; downloading: boolean }>({
+    current: 0, total: 0, downloading: false
+  });
+
+  const downloadAllSurahs = useCallback(async (
+    reciterId: number,
+    moshafId: number,
+    surahIds: number[],
+    server: string
+  ): Promise<void> => {
+    const toDownload = surahIds.filter(id => !isDownloaded(reciterId, moshafId, id));
+    if (toDownload.length === 0) return;
+
+    setBatchProgress({ current: 0, total: toDownload.length, downloading: true });
+
+    for (let i = 0; i < toDownload.length; i++) {
+      try {
+        await downloadAudio(reciterId, moshafId, toDownload[i], server);
+      } catch (e) {
+        console.error(`Failed to download surah ${toDownload[i]}:`, e);
+      }
+      setBatchProgress(prev => ({ ...prev, current: i + 1 }));
+    }
+
+    setBatchProgress(prev => ({ ...prev, downloading: false }));
+  }, [isDownloaded, downloadAudio]);
+
+  const cancelBatchDownload = useCallback(() => {
+    setBatchProgress({ current: 0, total: 0, downloading: false });
+  }, []);
+
   return {
     isLoading,
     downloadedSurahs,
@@ -236,5 +267,8 @@ export function useOfflineAudio() {
     getOfflineAudioUrl,
     deleteAudio,
     getDownloadedCount,
+    batchProgress,
+    downloadAllSurahs,
+    cancelBatchDownload,
   };
 }
