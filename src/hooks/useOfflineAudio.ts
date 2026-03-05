@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { getSurahAudioUrl } from "@/lib/api";
 
-interface DownloadedSurah {
+export interface DownloadedSurah {
   surahId: number;
   reciterId: number;
   moshafId: number;
@@ -258,6 +258,37 @@ export function useOfflineAudio() {
     setBatchProgress({ current: 0, total: 0, downloading: false });
   }, []);
 
+  const getStorageSize = useCallback(async (): Promise<number> => {
+    try {
+      const db = await openDB();
+      const tx = db.transaction(STORE_NAME, "readonly");
+      const store = tx.objectStore(STORE_NAME);
+      return new Promise((resolve) => {
+        const request = store.getAll();
+        request.onsuccess = () => {
+          const blobs = request.result as Blob[];
+          const totalSize = blobs.reduce((acc, blob) => acc + (blob?.size || 0), 0);
+          resolve(totalSize);
+        };
+        request.onerror = () => resolve(0);
+      });
+    } catch { return 0; }
+  }, []);
+
+  const deleteAllAudio = useCallback(async (): Promise<void> => {
+    try {
+      const db = await openDB();
+      const audioTx = db.transaction(STORE_NAME, "readwrite");
+      audioTx.objectStore(STORE_NAME).clear();
+      const metaTx = db.transaction(META_STORE_NAME, "readwrite");
+      metaTx.objectStore(META_STORE_NAME).clear();
+      setDownloadedSurahs(new Map());
+    } catch (error) {
+      console.error("Failed to delete all audio:", error);
+      throw error;
+    }
+  }, []);
+
   return {
     isLoading,
     downloadedSurahs,
@@ -270,5 +301,7 @@ export function useOfflineAudio() {
     batchProgress,
     downloadAllSurahs,
     cancelBatchDownload,
+    getStorageSize,
+    deleteAllAudio,
   };
 }
