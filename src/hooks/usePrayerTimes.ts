@@ -236,6 +236,20 @@ export function usePrayerTimes() {
             icon: "/favicon.ico",
             tag: `prayer-${prayerKey}`,
           });
+
+          // Play azan sound (skip for Imsak & Sunrise)
+          if (prayerKey !== "Imsak") {
+            try {
+              const azanUrl = prayerKey === "Fajr"
+                ? "https://cdn.islamic.network/quran/audio/64/ar.alafasy/1.mp3"
+                : "https://www.islamcan.com/audio/adhan/azan1.mp3";
+              const audio = new Audio(azanUrl);
+              audio.volume = 0.7;
+              audio.play().catch(() => console.log("Tidak bisa memutar azan"));
+            } catch {
+              console.log("Error playing azan");
+            }
+          }
         }
       }, delay);
 
