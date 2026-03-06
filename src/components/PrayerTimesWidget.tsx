@@ -1,9 +1,10 @@
-import { usePrayerTimes } from "@/hooks/usePrayerTimes";
-import { Clock, Sun, Sunrise, Sunset, Moon, MapPin, Loader2, Timer, Settings, Bell, BellOff, Calendar } from "lucide-react";
-import { useMemo, useState, useEffect } from "react";
+import { usePrayerTimes, AZAN_OPTIONS } from "@/hooks/usePrayerTimes";
+import { Clock, Sun, Sunrise, Sunset, Moon, MapPin, Loader2, Timer, Settings, Bell, BellOff, Calendar, Volume2, Square, Music } from "lucide-react";
+import { useMemo, useState, useEffect, useRef } from "react";
 import { LocationPicker } from "./LocationPicker";
 import { Button } from "./ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 interface PrayerTimeItemProps {
   name: string;
@@ -30,9 +31,12 @@ const PrayerTimeItem = ({ name, time, icon, isActive, isNext }: PrayerTimeItemPr
 );
 
 export function PrayerTimesWidget() {
-  const { prayerTimes, hijriDate, loading, locationName, gpsError, manualLocation, setManualLocation, notificationEnabled, toggleNotification } = usePrayerTimes();
+  const { prayerTimes, hijriDate, loading, locationName, gpsError, manualLocation, setManualLocation, notificationEnabled, toggleNotification, selectedAzan, changeAzanSound, testAzanSound } = usePrayerTimes();
   const [countdown, setCountdown] = useState<string>("");
   const [showLocationPicker, setShowLocationPicker] = useState(false);
+  const [showAzanSettings, setShowAzanSettings] = useState(false);
+  const testAudioRef = useRef<HTMLAudioElement | null>(null);
+  const [isTestPlaying, setIsTestPlaying] = useState(false);
 
   const { currentPrayer, nextPrayer, nextPrayerTime } = useMemo(() => {
     if (!prayerTimes) return { currentPrayer: null, nextPrayer: null, nextPrayerTime: null };
@@ -284,6 +288,64 @@ export function PrayerTimesWidget() {
             <span className="text-xs text-muted-foreground">Menuju {getPrayerNameIndonesian(nextPrayer)}</span>
           </div>
           <p className="text-2xl font-bold text-primary font-mono">{countdown}</p>
+        </div>
+      )}
+
+      {/* Azan Settings */}
+      {notificationEnabled && (
+        <div className="mt-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full text-xs text-muted-foreground hover:text-foreground"
+            onClick={() => setShowAzanSettings(!showAzanSettings)}
+          >
+            <Music className="w-3 h-3 mr-1" />
+            Pengaturan Suara Azan
+          </Button>
+          
+          {showAzanSettings && (
+            <div className="mt-2 p-3 bg-muted/50 rounded-lg space-y-3">
+              <div className="flex items-center gap-2">
+                <Select value={selectedAzan} onValueChange={changeAzanSound}>
+                  <SelectTrigger className="flex-1 h-8 text-xs">
+                    <SelectValue placeholder="Pilih suara azan" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {AZAN_OPTIONS.map((option) => (
+                      <SelectItem key={option.id} value={option.id} className="text-xs">
+                        {option.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 px-3 text-xs"
+                  onClick={() => {
+                    if (isTestPlaying && testAudioRef.current) {
+                      testAudioRef.current.pause();
+                      testAudioRef.current.currentTime = 0;
+                      testAudioRef.current = null;
+                      setIsTestPlaying(false);
+                    } else {
+                      const audio = testAzanSound();
+                      testAudioRef.current = audio;
+                      setIsTestPlaying(true);
+                      audio.addEventListener("ended", () => {
+                        setIsTestPlaying(false);
+                        testAudioRef.current = null;
+                      });
+                    }
+                  }}
+                >
+                  {isTestPlaying ? <Square className="w-3 h-3 mr-1" /> : <Volume2 className="w-3 h-3 mr-1" />}
+                  {isTestPlaying ? "Stop" : "Test"}
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
