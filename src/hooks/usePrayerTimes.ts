@@ -28,6 +28,37 @@ export interface ManualLocation {
 
 const MANUAL_LOCATION_KEY = "manual_prayer_location";
 const NOTIFICATION_KEY = "prayer_notification_enabled";
+const AZAN_SOUND_KEY = "azan_sound_selection";
+
+export interface AzanOption {
+  id: string;
+  name: string;
+  url: string;
+  fajrUrl?: string; // different URL for Fajr if needed
+}
+
+export const AZAN_OPTIONS: AzanOption[] = [
+  {
+    id: "makkah",
+    name: "Azan Makkah",
+    url: "https://cdn.islamic.network/quran/audio/64/ar.alafasy/1.mp3",
+  },
+  {
+    id: "madinah",
+    name: "Azan Madinah",
+    url: "https://www.islamcan.com/audio/adhan/azan1.mp3",
+  },
+  {
+    id: "mishary",
+    name: "Mishary Rashid",
+    url: "https://cdn.islamic.network/quran/audio/64/ar.alafasy/2.mp3",
+  },
+  {
+    id: "egypt",
+    name: "Azan Mesir",
+    url: "https://cdn.islamic.network/quran/audio/64/ar.alafasy/3.mp3",
+  },
+];
 
 export function usePrayerTimes() {
   const [prayerTimes, setPrayerTimes] = useState<PrayerTimes | null>(null);
@@ -41,6 +72,9 @@ export function usePrayerTimes() {
   const [gpsError, setGpsError] = useState(false);
   const [notificationEnabled, setNotificationEnabled] = useState(() => {
     return localStorage.getItem(NOTIFICATION_KEY) === "true";
+  });
+  const [selectedAzan, setSelectedAzan] = useState<string>(() => {
+    return localStorage.getItem(AZAN_SOUND_KEY) || "makkah";
   });
 
   const fetchPrayerTimesForCoords = useCallback(async (latitude: number, longitude: number, locName?: string) => {
@@ -237,12 +271,11 @@ export function usePrayerTimes() {
             tag: `prayer-${prayerKey}`,
           });
 
-          // Play azan sound (skip for Imsak & Sunrise)
+          // Play azan sound (skip for Imsak)
           if (prayerKey !== "Imsak") {
             try {
-              const azanUrl = prayerKey === "Fajr"
-                ? "https://cdn.islamic.network/quran/audio/64/ar.alafasy/1.mp3"
-                : "https://www.islamcan.com/audio/adhan/azan1.mp3";
+              const azanOption = AZAN_OPTIONS.find(a => a.id === selectedAzan) || AZAN_OPTIONS[0];
+              const azanUrl = (prayerKey === "Fajr" && azanOption.fajrUrl) ? azanOption.fajrUrl : azanOption.url;
               const audio = new Audio(azanUrl);
               audio.volume = 0.7;
               audio.play().catch(() => console.log("Tidak bisa memutar azan"));
@@ -268,7 +301,21 @@ export function usePrayerTimes() {
     return () => {
       timeouts.forEach(clearTimeout);
     };
-  }, [notificationEnabled, prayerTimes]);
+  }, [notificationEnabled, prayerTimes, selectedAzan]);
+
+  const changeAzanSound = useCallback((azanId: string) => {
+    setSelectedAzan(azanId);
+    localStorage.setItem(AZAN_SOUND_KEY, azanId);
+  }, []);
+
+  const testAzanSound = useCallback((azanId?: string) => {
+    const id = azanId || selectedAzan;
+    const azanOption = AZAN_OPTIONS.find(a => a.id === id) || AZAN_OPTIONS[0];
+    const audio = new Audio(azanOption.url);
+    audio.volume = 0.7;
+    audio.play().catch(() => console.log("Tidak bisa memutar azan test"));
+    return audio;
+  }, [selectedAzan]);
 
   return { 
     prayerTimes, 
@@ -281,5 +328,8 @@ export function usePrayerTimes() {
     setManualLocation: setManualLocationAndSave,
     notificationEnabled,
     toggleNotification,
+    selectedAzan,
+    changeAzanSound,
+    testAzanSound,
   };
 }
