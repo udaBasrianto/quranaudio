@@ -19,7 +19,7 @@ import { useBookmarks } from "@/hooks/useBookmarks";
 import { useOfflineAudio } from "@/hooks/useOfflineAudio";
 import { useTheme, FontSize } from "@/hooks/useTheme";
 import { Reciter, Surah, Moshaf } from "@/types/quran";
-import { ArrowLeft, Hand, Sun, Clock, ChevronDown, ChevronUp, Users, Download, DownloadCloud, Loader2, HardDrive } from "lucide-react";
+import { ArrowLeft, Hand, Sun, Clock, ChevronDown, ChevronUp, Users, Download, DownloadCloud, Loader2, HardDrive, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
@@ -233,6 +233,18 @@ const Index = () => {
               {showDzikirPagiPetang ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </Button>
             {showDzikirPagiPetang && <DzikirPagiPetang />}
+
+            {/* Quran Quiz */}
+            <Button
+              variant="outline"
+              className="w-full justify-between"
+              onClick={() => navigate("/quran-quiz")}
+            >
+              <div className="flex items-center gap-2">
+                <GraduationCap className="w-4 h-4" />
+                <span>Kuis Kosakata Al-Quran</span>
+              </div>
+            </Button>
 
             {/* Offline Storage Management */}
             <Button
