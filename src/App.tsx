@@ -11,6 +11,7 @@ import QuranQuiz from "./pages/QuranQuiz";
 import PrayerTimesPage from "./pages/PrayerTimesPage";
 import DzikirCounterPage from "./pages/DzikirCounterPage";
 import DzikirPagiPetangPage from "./pages/DzikirPagiPetangPage";
+import QuranIndexPage from "./pages/QuranIndexPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
