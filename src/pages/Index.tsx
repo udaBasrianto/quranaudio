@@ -488,6 +488,7 @@ const Index = () => {
           onShowText={() => setShowTextViewer(true)}
           onTimeUpdate={handleTimeUpdate}
           getOfflineAudioUrl={getOfflineAudioUrl}
+          activeJuz={juzPlaylist ? parseInt(selectedJuz) : undefined}
         />
       )}
     </div>

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, X, BookOpen, Repeat, Repeat1, Shuffle, WifiOff } from "lucide-react";
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, X, BookOpen, Repeat, Repeat1, Shuffle, WifiOff, Layers } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Surah, Reciter, Moshaf } from "@/types/quran";
 import { getSurahAudioUrl } from "@/lib/api";
@@ -18,6 +18,7 @@ interface AudioPlayerProps {
   onTimeUpdate?: (currentTime: number, duration: number) => void;
   getOfflineAudioUrl?: (reciterId: number, moshafId: number, surahId: number) => Promise<string | null>;
   isOffline?: boolean;
+  activeJuz?: number;
 }
 
 export function AudioPlayer({
@@ -32,6 +33,7 @@ export function AudioPlayer({
   onTimeUpdate,
   getOfflineAudioUrl,
   isOffline,
+  activeJuz,
 }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -262,6 +264,12 @@ export function AudioPlayer({
               <h4 className="font-semibold text-foreground truncate text-sm">
                 {surah.name}
               </h4>
+              {activeJuz && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/15 text-primary text-[10px] font-semibold flex-shrink-0">
+                  <Layers className="w-3 h-3" />
+                  Juz {activeJuz}
+                </span>
+              )}
               {isUsingOffline && (
                 <span title="Mode Offline">
                   <WifiOff className="w-3 h-3 text-primary flex-shrink-0" />
