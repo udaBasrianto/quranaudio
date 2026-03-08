@@ -264,6 +264,12 @@ export function AudioPlayer({
               <h4 className="font-semibold text-foreground truncate text-sm">
                 {surah.name}
               </h4>
+              {activeJuz && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/15 text-primary text-[10px] font-semibold flex-shrink-0">
+                  <Layers className="w-3 h-3" />
+                  Juz {activeJuz}
+                </span>
+              )}
               {isUsingOffline && (
                 <span title="Mode Offline">
                   <WifiOff className="w-3 h-3 text-primary flex-shrink-0" />
