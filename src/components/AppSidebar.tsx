@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   BookOpen, Moon, Sun, Bookmark, Search, Shield, LogIn, LogOut,
   Download, Users, Menu, X, Clock, Hand, Settings, GraduationCap,
-  HardDrive, Home, ChevronRight,
+  HardDrive, Home, ChevronRight, List,
 } from "lucide-react";
 import { ThemeColor, FontSize, AutoNightMode, themeColors } from "@/hooks/useTheme";
 import type { PrayerTimes } from "@/hooks/usePrayerTimes";
