@@ -471,7 +471,7 @@ const Index = () => {
           reciter={selectedReciter}
           moshaf={selectedMoshaf}
           surahs={surahsData.suwar}
-          availableSurahs={availableSurahs}
+          availableSurahs={juzPlaylist || availableSurahs}
           onSurahChange={setCurrentSurah}
           onClose={handleClosePlayer}
           onShowText={() => setShowTextViewer(true)}
