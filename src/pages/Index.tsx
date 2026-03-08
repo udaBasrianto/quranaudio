@@ -124,6 +124,26 @@ const Index = () => {
     if (!selectedMoshaf || !availableSurahs.includes(surah.id)) return;
     setCurrentSurah(surah);
     setCurrentAyahIndex(null);
+    setJuzPlaylist(null); // reset juz playlist when manually selecting
+  };
+
+  const handlePlayJuz = () => {
+    if (selectedJuz === "all" || !surahsData?.suwar || !selectedMoshaf) return;
+    const juzNumber = parseInt(selectedJuz);
+    const surahsInJuz = getSurahsInJuz(juzNumber);
+    // Only include surahs available for this reciter
+    const playable = surahsInJuz.filter((id) => availableSurahs.includes(id));
+    if (playable.length === 0) {
+      toast.error("Tidak ada surah yang tersedia untuk juz ini");
+      return;
+    }
+    setJuzPlaylist(playable);
+    const firstSurah = surahsData.suwar.find((s) => s.id === playable[0]);
+    if (firstSurah) {
+      setCurrentSurah(firstSurah);
+      setCurrentAyahIndex(null);
+      toast.success(`Memutar Juz ${juzNumber} (${playable.length} surah)`);
+    }
   };
 
   const handleBackToReciters = () => {
