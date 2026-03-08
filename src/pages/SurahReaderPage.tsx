@@ -51,7 +51,7 @@ const SurahReaderPage = () => {
         currentAyahIndex={initialAyah}
         isBookmarked={(sn, an) => isBookmarked(sn, an)}
         onToggleBookmark={toggleBookmark}
-        arabicFontSize={arabicFontSize}
+        arabicFontSize={getArabicFontStyle()}
       />
     </div>
   );
