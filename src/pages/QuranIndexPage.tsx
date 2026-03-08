@@ -156,11 +156,21 @@ const QuranIndexPage = () => {
 };
 
 function IndexEntryItem({ entry }: { entry: QuranIndexEntry }) {
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    const ayah = typeof entry.ayah === "number" ? entry.ayah : entry.ayah.toString().split("-")[0];
+    navigate(`/surah/${entry.surah}?ayah=${entry.ayah}`);
+  };
+
   return (
-    <div className="px-4 py-3 hover:bg-muted/30 transition-colors">
+    <button
+      onClick={handleClick}
+      className="w-full text-left px-4 py-3 hover:bg-muted/30 transition-colors group cursor-pointer"
+    >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-foreground">{entry.title}</p>
+          <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">{entry.title}</p>
           {entry.arabic && (
             <p className="text-lg font-arabic text-primary mt-1 leading-relaxed text-right" dir="rtl">
               {entry.arabic}
@@ -170,8 +180,9 @@ function IndexEntryItem({ entry }: { entry: QuranIndexEntry }) {
             📖 QS. {entry.surahName} ({entry.surah}): {entry.ayah}
           </p>
         </div>
+        <ExternalLink className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-1 shrink-0" />
       </div>
-    </div>
+    </button>
   );
 }
 

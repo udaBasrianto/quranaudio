@@ -33,6 +33,7 @@ const App = () => (
           <Route path="/dzikir-counter" element={<DzikirCounterPage />} />
           <Route path="/dzikir-pagi-petang" element={<DzikirPagiPetangPage />} />
           <Route path="/quran-index" element={<QuranIndexPage />} />
+          <Route path="/surah/:surahId" element={<SurahReaderPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
