@@ -11,6 +11,7 @@ import QuranQuiz from "./pages/QuranQuiz";
 import PrayerTimesPage from "./pages/PrayerTimesPage";
 import DzikirCounterPage from "./pages/DzikirCounterPage";
 import DzikirPagiPetangPage from "./pages/DzikirPagiPetangPage";
+import QuranIndexPage from "./pages/QuranIndexPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/prayer-times" element={<PrayerTimesPage />} />
           <Route path="/dzikir-counter" element={<DzikirCounterPage />} />
           <Route path="/dzikir-pagi-petang" element={<DzikirPagiPetangPage />} />
+          <Route path="/quran-index" element={<QuranIndexPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

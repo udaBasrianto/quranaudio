@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   BookOpen, Moon, Sun, Bookmark, Search, Shield, LogIn, LogOut,
   Download, Users, Menu, X, Clock, Hand, Settings, GraduationCap,
-  HardDrive, Home, ChevronRight,
+  HardDrive, Home, ChevronRight, List,
 } from "lucide-react";
 import { ThemeColor, FontSize, AutoNightMode, themeColors } from "@/hooks/useTheme";
 import type { PrayerTimes } from "@/hooks/usePrayerTimes";
@@ -195,6 +195,7 @@ export function AppSidebar({
             <SidebarItem icon={Hand} label="Dzikir Counter" onClick={() => menuAction(() => navigate("/dzikir-counter"))} />
             <SidebarItem icon={Sun} label="Dzikir Pagi & Petang" onClick={() => menuAction(() => navigate("/dzikir-pagi-petang"))} />
             <SidebarItem icon={GraduationCap} label="Kuis Kosakata" onClick={() => menuAction(() => navigate("/quran-quiz"))} />
+            <SidebarItem icon={List} label="Indeks Al-Quran" onClick={() => menuAction(() => navigate("/quran-index"))} />
             <SidebarItem icon={HardDrive} label="Storage Offline" onClick={() => menuAction(() => navigate("/offline-storage"))} />
           </div>
 
