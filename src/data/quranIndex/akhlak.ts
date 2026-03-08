@@ -1,0 +1,27 @@
+import { QuranIndexEntry } from "../quranIndex";
+
+export const akhlakEntries: QuranIndexEntry[] = [
+  { title: "Wasiat Luqman kepada anaknya", surah: 31, ayah: "12-19", surahName: "Luqman" },
+  { title: "Larangan ghibah & su'udzon", surah: 49, ayah: 12, surahName: "Al-Hujurat" },
+  { title: "Berbuat baik kepada orang tua", surah: 17, ayah: "23-24", surahName: "Al-Isra" },
+  { title: "Larangan sombong", surah: 31, ayah: 18, surahName: "Luqman" },
+  { title: "Sederhana dalam berjalan & bersuara", surah: 31, ayah: 19, surahName: "Luqman" },
+  { title: "Etika memasuki rumah orang", surah: 24, ayah: "27-29", surahName: "An-Nur" },
+  { title: "Menjaga pandangan & kemaluan", surah: 24, ayah: "30-31", surahName: "An-Nur" },
+  { title: "Tolong-menolong dalam kebaikan", surah: 5, ayah: 2, surahName: "Al-Ma'idah" },
+  { title: "Larangan membunuh jiwa", surah: 5, ayah: 32, surahName: "Al-Ma'idah" },
+  { title: "Menepati janji", surah: 17, ayah: 34, surahName: "Al-Isra" },
+  { title: "Bersabar & bersyukur", surah: 14, ayah: 7, surahName: "Ibrahim" },
+  { title: "Memaafkan orang lain", surah: 42, ayah: "40-43", surahName: "Ash-Shura" },
+  { title: "Adab bermusyawarah", surah: 42, ayah: 38, surahName: "Ash-Shura" },
+  { title: "Larangan berlebihan (israf)", surah: 7, ayah: 31, surahName: "Al-A'raf" },
+  { title: "Jangan mengolok-olok orang lain", surah: 49, ayah: 11, surahName: "Al-Hujurat" },
+  { title: "Larangan memata-matai & mencari aib", surah: 49, ayah: 12, surahName: "Al-Hujurat" },
+  { title: "Kemuliaan berdasarkan ketakwaan", surah: 49, ayah: 13, surahName: "Al-Hujurat" },
+  { title: "Membalas keburukan dengan kebaikan", surah: 41, ayah: 34, surahName: "Fussilat" },
+  { title: "Berkata yang baik atau diam", surah: 17, ayah: 53, surahName: "Al-Isra" },
+  { title: "Larangan bakhil (kikir)", surah: 4, ayah: 37, surahName: "An-Nisa" },
+  { title: "Menjaga amanah", surah: 8, ayah: 27, surahName: "Al-Anfal" },
+  { title: "Larangan berbuat kerusakan di bumi", surah: 2, ayah: 11, surahName: "Al-Baqarah" },
+  { title: "Adil dalam bersaksi", surah: 5, ayah: 8, surahName: "Al-Ma'idah" },
+];

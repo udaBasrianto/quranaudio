@@ -1,0 +1,27 @@
+import { QuranIndexEntry } from "../quranIndex";
+
+export const peristiwaEntries: QuranIndexEntry[] = [
+  { title: "Penciptaan langit & bumi", surah: 2, ayah: 29, surahName: "Al-Baqarah" },
+  { title: "Penciptaan manusia dari tanah", surah: 23, ayah: "12-14", surahName: "Al-Mu'minun" },
+  { title: "Peristiwa Isra Mi'raj", surah: 17, ayah: 1, surahName: "Al-Isra" },
+  { title: "Perang Badar", surah: 3, ayah: "123-127", surahName: "Ali Imran" },
+  { title: "Perang Uhud", surah: 3, ayah: "121-175", surahName: "Ali Imran" },
+  { title: "Perang Khandaq (Ahzab)", surah: 33, ayah: "9-27", surahName: "Al-Ahzab" },
+  { title: "Penaklukan Makkah (Fathul Makkah)", surah: 48, ayah: "1-29", surahName: "Al-Fath" },
+  { title: "Hijrah Nabi", surah: 9, ayah: 40, surahName: "At-Taubah" },
+  { title: "Terbelahnya bulan", surah: 54, ayah: 1, surahName: "Al-Qamar" },
+  { title: "Ashabul Kahfi (pemuda gua)", surah: 18, ayah: "9-26", surahName: "Al-Kahf" },
+  { title: "Ashabul Fil (pasukan gajah)", surah: 105, ayah: "1-5", surahName: "Al-Fil" },
+  { title: "Banjir besar Nabi Nuh", surah: 11, ayah: "36-49", surahName: "Hud" },
+  { title: "Tongkat Nabi Musa membelah laut", surah: 26, ayah: "60-68", surahName: "Ash-Shu'ara" },
+  { title: "Kisah Qarun yang tenggelam", surah: 28, ayah: "76-82", surahName: "Al-Qashash" },
+  { title: "Kisah Dzulqarnain & Ya'juj Ma'juj", surah: 18, ayah: "83-101", surahName: "Al-Kahf" },
+  { title: "Turunnya Al-Quran (Lailatul Qadr)", surah: 97, ayah: "1-5", surahName: "Al-Qadr" },
+  { title: "Peristiwa Ifk (tuduhan terhadap Aisyah)", surah: 24, ayah: "11-20", surahName: "An-Nur" },
+  { title: "Perjanjian Hudaibiyah", surah: 48, ayah: "18-21", surahName: "Al-Fath" },
+  { title: "Perang Hunain", surah: 9, ayah: "25-27", surahName: "At-Taubah" },
+  { title: "Perang Tabuk & orang munafik", surah: 9, ayah: "38-52", surahName: "At-Taubah" },
+  { title: "Pengalihan kiblat ke Ka'bah", surah: 2, ayah: "142-150", surahName: "Al-Baqarah" },
+  { title: "Pembebasan Bani Israil dari Fir'aun", surah: 7, ayah: "127-141", surahName: "Al-A'raf" },
+  { title: "Bani Israil & patung sapi emas", surah: 2, ayah: "51-54", surahName: "Al-Baqarah" },
+];
