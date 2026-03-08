@@ -10,6 +10,7 @@ import { SurahTextViewer } from "@/components/SurahTextViewer";
 import { BookmarksList } from "@/components/BookmarksList";
 import { AyahSearchResults } from "@/components/AyahSearchResults";
 import { ReciterSkeleton, SurahSkeleton } from "@/components/LoadingSkeleton";
+import { HomeGreeting } from "@/components/HomeGreeting";
 import { useReciters, useSurahs } from "@/hooks/useQuranData";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useBookmarks } from "@/hooks/useBookmarks";
@@ -218,6 +219,17 @@ const Index = () => {
       />
 
       <main className="container mx-auto px-4 py-4 space-y-4">
+
+        {/* Greeting & Favorite Reciters (only on reciters tab without selection) */}
+        {!selectedReciter && activeTab === "reciters" && (() => {
+          const favReciters = recitersData?.reciters?.filter(r => isReciterFavorite(r.id)) || [];
+          return (
+            <HomeGreeting
+              favoriteReciters={favReciters}
+              onReciterSelect={handleReciterSelect}
+            />
+          );
+        })()}
 
         {/* Tab Navigation or Back Button */}
         {selectedReciter ? (

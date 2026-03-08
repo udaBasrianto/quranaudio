@@ -1,14 +1,16 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, BookOpen, Loader2 } from "lucide-react";
+import { ArrowLeft, BookOpen, Loader2, LogIn } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useSurahQuiz, SurahQuizMode } from "@/hooks/useSurahQuiz";
 import { JuzSurahSelector } from "@/components/quiz/JuzSurahSelector";
 import { SurahQuizPlayer } from "@/components/quiz/SurahQuizPlayer";
+import { useAuth } from "@/hooks/useAuth";
 
 const QuranQuiz = () => {
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const {
     selectedJuz,
     setSelectedJuz,
@@ -28,6 +30,42 @@ const QuranQuiz = () => {
     resetToJuzSelection,
     isQuizFinished,
   } = useSurahQuiz();
+
+  // Auth loading
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Not logged in
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-4 max-w-lg space-y-6">
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate("/")} className="text-primary hover:underline">
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h1 className="text-xl font-bold text-foreground">Kuis Al-Quran</h1>
+          </div>
+          <Card className="p-8 text-center space-y-4">
+            <div className="text-5xl">🔒</div>
+            <h2 className="text-xl font-bold text-foreground">Login Diperlukan</h2>
+            <p className="text-muted-foreground">
+              Silakan login terlebih dahulu untuk mengakses fitur Kuis Al-Quran.
+            </p>
+            <Button size="lg" onClick={() => navigate("/auth")} className="gap-2">
+              <LogIn className="w-4 h-4" />
+              Login / Daftar
+            </Button>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   // Quiz active
   if (quizStarted && quizState && surahDetail) {
