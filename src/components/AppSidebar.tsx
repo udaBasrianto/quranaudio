@@ -33,9 +33,6 @@ interface AppSidebarProps {
   customNightEnd: string;
   onCustomNightEndChange: (time: string) => void;
   prayerTimes: PrayerTimes | null;
-  onShowPrayerTimes?: () => void;
-  onShowDzikirCounter?: () => void;
-  onShowDzikirPagiPetang?: () => void;
 }
 
 export function AppSidebar({
@@ -55,9 +52,6 @@ export function AppSidebar({
   customNightEnd,
   onCustomNightEndChange,
   prayerTimes,
-  onShowPrayerTimes,
-  onShowDzikirCounter,
-  onShowDzikirPagiPetang,
 }: AppSidebarProps) {
   const navigate = useNavigate();
   const { user, isAdmin, signOut } = useAuth();
@@ -197,9 +191,9 @@ export function AppSidebar({
 
           <div className="px-3 py-1">
             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-3 mb-1">Fitur</p>
-            <SidebarItem icon={Clock} label="Waktu Sholat" onClick={() => menuAction(() => onShowPrayerTimes?.())} />
-            <SidebarItem icon={Hand} label="Dzikir Counter" onClick={() => menuAction(() => onShowDzikirCounter?.())} />
-            <SidebarItem icon={Sun} label="Dzikir Pagi & Petang" onClick={() => menuAction(() => onShowDzikirPagiPetang?.())} />
+            <SidebarItem icon={Clock} label="Waktu Sholat" onClick={() => menuAction(() => navigate("/prayer-times"))} />
+            <SidebarItem icon={Hand} label="Dzikir Counter" onClick={() => menuAction(() => navigate("/dzikir-counter"))} />
+            <SidebarItem icon={Sun} label="Dzikir Pagi & Petang" onClick={() => menuAction(() => navigate("/dzikir-pagi-petang"))} />
             <SidebarItem icon={GraduationCap} label="Kuis Kosakata" onClick={() => menuAction(() => navigate("/quran-quiz"))} />
             <SidebarItem icon={HardDrive} label="Storage Offline" onClick={() => menuAction(() => navigate("/offline-storage"))} />
           </div>

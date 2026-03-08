@@ -8,6 +8,9 @@ import Auth from "./pages/Auth";
 import AdminDashboard from "./pages/AdminDashboard";
 import OfflineStorage from "./pages/OfflineStorage";
 import QuranQuiz from "./pages/QuranQuiz";
+import PrayerTimesPage from "./pages/PrayerTimesPage";
+import DzikirCounterPage from "./pages/DzikirCounterPage";
+import DzikirPagiPetangPage from "./pages/DzikirPagiPetangPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +27,9 @@ const App = () => (
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/offline-storage" element={<OfflineStorage />} />
           <Route path="/quran-quiz" element={<QuranQuiz />} />
+          <Route path="/prayer-times" element={<PrayerTimesPage />} />
+          <Route path="/dzikir-counter" element={<DzikirCounterPage />} />
+          <Route path="/dzikir-pagi-petang" element={<DzikirPagiPetangPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

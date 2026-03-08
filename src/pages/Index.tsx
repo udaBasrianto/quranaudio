@@ -10,9 +10,6 @@ import { SurahTextViewer } from "@/components/SurahTextViewer";
 import { BookmarksList } from "@/components/BookmarksList";
 import { AyahSearchResults } from "@/components/AyahSearchResults";
 import { ReciterSkeleton, SurahSkeleton } from "@/components/LoadingSkeleton";
-import { PrayerTimesWidget } from "@/components/PrayerTimesWidget";
-import { DzikirCounter } from "@/components/DzikirCounter";
-import { DzikirPagiPetang } from "@/components/DzikirPagiPetang";
 import { useReciters, useSurahs } from "@/hooks/useQuranData";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useBookmarks } from "@/hooks/useBookmarks";
@@ -44,9 +41,6 @@ const Index = () => {
   const [ayahSearchQuery, setAyahSearchQuery] = useState("");
   const [currentAyahIndex, setCurrentAyahIndex] = useState<number | null>(null);
   const [totalAyahs, setTotalAyahs] = useState<number>(0);
-  const [showDzikirCounter, setShowDzikirCounter] = useState(false);
-  const [showDzikirPagiPetang, setShowDzikirPagiPetang] = useState(false);
-  const [showPrayerTimes, setShowPrayerTimes] = useState(false);
   const [selectedJuz, setSelectedJuz] = useState<string>("all");
   const [juzPlaylist, setJuzPlaylist] = useState<number[] | null>(null);
 
@@ -221,16 +215,9 @@ const Index = () => {
         customNightEnd={customNightEnd}
         onCustomNightEndChange={setCustomNightEnd}
         prayerTimes={prayerTimes}
-        onShowPrayerTimes={() => setShowPrayerTimes(!showPrayerTimes)}
-        onShowDzikirCounter={() => setShowDzikirCounter(!showDzikirCounter)}
-        onShowDzikirPagiPetang={() => setShowDzikirPagiPetang(!showDzikirPagiPetang)}
       />
 
       <main className="container mx-auto px-4 py-4 space-y-4">
-        {/* Collapsible widgets */}
-        {showPrayerTimes && <PrayerTimesWidget />}
-        {showDzikirCounter && <DzikirCounter />}
-        {showDzikirPagiPetang && <DzikirPagiPetang />}
 
         {/* Tab Navigation or Back Button */}
         {selectedReciter ? (
