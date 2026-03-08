@@ -31,6 +31,42 @@ const QuranQuiz = () => {
     isQuizFinished,
   } = useSurahQuiz();
 
+  // Auth loading
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Not logged in
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 py-4 max-w-lg space-y-6">
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate("/")} className="text-primary hover:underline">
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <h1 className="text-xl font-bold text-foreground">Kuis Al-Quran</h1>
+          </div>
+          <Card className="p-8 text-center space-y-4">
+            <div className="text-5xl">🔒</div>
+            <h2 className="text-xl font-bold text-foreground">Login Diperlukan</h2>
+            <p className="text-muted-foreground">
+              Silakan login terlebih dahulu untuk mengakses fitur Kuis Al-Quran.
+            </p>
+            <Button size="lg" onClick={() => navigate("/auth")} className="gap-2">
+              <LogIn className="w-4 h-4" />
+              Login / Daftar
+            </Button>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   // Quiz active
   if (quizStarted && quizState && surahDetail) {
     return (
