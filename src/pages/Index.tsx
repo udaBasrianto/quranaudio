@@ -306,6 +306,16 @@ const Index = () => {
                   ))}
                 </SelectContent>
               </Select>
+              {selectedJuz !== "all" && (
+                <Button
+                  size="sm"
+                  className="h-9 rounded-xl gap-1.5"
+                  onClick={handlePlayJuz}
+                >
+                  <Play className="w-4 h-4" />
+                  Putar Juz
+                </Button>
+              )}
             </div>
           </div>
         ) : (
