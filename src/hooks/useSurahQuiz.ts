@@ -1,11 +1,12 @@
 import { useState, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchSurahDetail, Ayah } from "@/lib/quranTextApi";
+import { fetchSurahDetail } from "@/lib/quranTextApi";
+import { quranVocabulary, QuranWord } from "@/data/quranVocabulary";
 
 export type SurahQuizMode = "arabic-to-indonesian" | "indonesian-to-arabic";
 
 interface QuizQuestion {
-  ayah: Ayah;
+  word: QuranWord;
   options: string[];
   correctAnswer: string;
 }
@@ -26,32 +27,21 @@ function shuffle<T>(arr: T[]): T[] {
   return [...arr].sort(() => Math.random() - 0.5);
 }
 
-// Truncate long translations for better quiz options
-function truncateText(text: string, maxLen = 80): string {
-  if (text.length <= maxLen) return text;
-  return text.substring(0, maxLen).trimEnd() + "...";
-}
+function generateWordQuizQuestions(mode: SurahQuizMode, count = 15): QuizQuestion[] {
+  const words = shuffle([...quranVocabulary]);
+  const selectedWords = words.slice(0, Math.min(count, words.length));
+  const isArabicToIndo = mode === "arabic-to-indonesian";
 
-function generateQuizQuestions(ayahs: Ayah[], mode: SurahQuizMode): QuizQuestion[] {
-  if (ayahs.length < 4) return [];
+  return selectedWords.map((word) => {
+    const correctAnswer = isArabicToIndo ? word.indonesian : word.arabic;
 
-  const shuffledAyahs = shuffle(ayahs);
-
-  return shuffledAyahs.map((ayah) => {
-    const isArabicToIndo = mode === "arabic-to-indonesian";
-    const correctAnswer = isArabicToIndo
-      ? truncateText(ayah.teksIndonesia)
-      : ayah.teksArab;
-
-    // Get 3 wrong answers from other ayahs
-    const otherAyahs = ayahs.filter((a) => a.nomorAyat !== ayah.nomorAyat);
-    const wrongAnswers = shuffle(otherAyahs)
+    const otherWords = quranVocabulary.filter((w) => w.id !== word.id);
+    const wrongAnswers = shuffle(otherWords)
       .slice(0, 3)
-      .map((a) => (isArabicToIndo ? truncateText(a.teksIndonesia) : a.teksArab));
+      .map((w) => (isArabicToIndo ? w.indonesian : w.arabic));
 
     const options = shuffle([correctAnswer, ...wrongAnswers]);
-
-    return { ayah, options, correctAnswer };
+    return { word, options, correctAnswer };
   });
 }
 
@@ -71,9 +61,9 @@ export function useSurahQuiz() {
   });
 
   const startQuiz = useCallback(() => {
-    if (!surahDetail || surahDetail.ayat.length < 4) return;
+    if (!surahDetail) return;
 
-    const generated = generateQuizQuestions(surahDetail.ayat, mode);
+    const generated = generateWordQuizQuestions(mode, 15);
     if (generated.length === 0) return;
 
     setQuestions(generated);
@@ -119,10 +109,7 @@ export function useSurahQuiz() {
     if (!quizState) return;
 
     const nextIdx = quizState.questionIndex + 1;
-    if (nextIdx >= questions.length) {
-      // Quiz finished - stay on last question with results
-      return;
-    }
+    if (nextIdx >= questions.length) return;
 
     setQuizState((prev) =>
       prev

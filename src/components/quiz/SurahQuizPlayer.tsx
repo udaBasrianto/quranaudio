@@ -1,4 +1,4 @@
-import { ArrowLeft, Trophy, Flame, Check, X, Star, RotateCcw } from "lucide-react";
+import { ArrowLeft, Trophy, Flame, Check, X, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,12 +6,13 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { SurahQuizMode } from "@/hooks/useSurahQuiz";
 import { SurahDetail } from "@/lib/quranTextApi";
+import { QuranWord } from "@/data/quranVocabulary";
 
 interface SurahQuizPlayerProps {
   surahDetail: SurahDetail;
   quizState: {
     currentQuestion: {
-      ayah: { nomorAyat: number; teksArab: string; teksLatin: string; teksIndonesia: string };
+      word: QuranWord;
       options: string[];
       correctAnswer: string;
     };
@@ -32,6 +33,61 @@ interface SurahQuizPlayerProps {
   onBackToSurah: () => void;
 }
 
+function QuizFinishedCard({
+  surahDetail,
+  score,
+  totalAnswered,
+  bestStreak,
+  onReset,
+  onBackToSurah,
+}: {
+  surahDetail: SurahDetail;
+  score: number;
+  totalAnswered: number;
+  bestStreak: number;
+  onReset: () => void;
+  onBackToSurah: () => void;
+}) {
+  const percentage = Math.round((score / totalAnswered) * 100);
+  return (
+    <div className="space-y-4">
+      <Card className="p-6 text-center space-y-4">
+        <div className="text-5xl">
+          {percentage >= 80 ? "🎉" : percentage >= 50 ? "👍" : "💪"}
+        </div>
+        <h2 className="text-xl font-bold text-foreground">Kuis Selesai!</h2>
+        <p className="text-lg text-foreground">
+          {surahDetail.namaLatin} ({surahDetail.nama})
+        </p>
+        <div className="flex justify-center gap-6">
+          <div className="text-center">
+            <p className="text-3xl font-bold text-primary">{score}</p>
+            <p className="text-xs text-muted-foreground">Benar</p>
+          </div>
+          <div className="text-center">
+            <p className="text-3xl font-bold text-foreground">{totalAnswered}</p>
+            <p className="text-xs text-muted-foreground">Total</p>
+          </div>
+          <div className="text-center">
+            <p className="text-3xl font-bold text-orange-500">{bestStreak}</p>
+            <p className="text-xs text-muted-foreground">Streak 🔥</p>
+          </div>
+        </div>
+        <p className="text-lg font-semibold text-foreground">{percentage}%</p>
+      </Card>
+      <div className="flex gap-2">
+        <Button variant="outline" className="flex-1" onClick={onReset}>
+          <RotateCcw className="w-4 h-4 mr-2" />
+          Ulangi
+        </Button>
+        <Button className="flex-1" onClick={onBackToSurah}>
+          Pilih Surah Lain
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export function SurahQuizPlayer({
   surahDetail,
   quizState,
@@ -42,48 +98,21 @@ export function SurahQuizPlayer({
   onReset,
   onBackToSurah,
 }: SurahQuizPlayerProps) {
-  const { currentQuestion, selectedAnswer, isCorrect, score, totalAnswered, streak, bestStreak, questionIndex, totalQuestions } = quizState;
+  const { currentQuestion, selectedAnswer, isCorrect, score, totalAnswered, streak, questionIndex, totalQuestions } = quizState;
   const isArabicToIndo = mode === "arabic-to-indonesian";
   const progressPercent = ((questionIndex + 1) / totalQuestions) * 100;
+  const word = currentQuestion.word;
 
   if (isQuizFinished) {
-    const percentage = Math.round((score / totalAnswered) * 100);
     return (
-      <div className="space-y-4">
-        <Card className="p-6 text-center space-y-4">
-          <div className="text-5xl">
-            {percentage >= 80 ? "🎉" : percentage >= 50 ? "👍" : "💪"}
-          </div>
-          <h2 className="text-xl font-bold text-foreground">Kuis Selesai!</h2>
-          <p className="text-lg text-foreground">
-            {surahDetail.namaLatin} ({surahDetail.nama})
-          </p>
-          <div className="flex justify-center gap-6">
-            <div className="text-center">
-              <p className="text-3xl font-bold text-primary">{score}</p>
-              <p className="text-xs text-muted-foreground">Benar</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-foreground">{totalAnswered}</p>
-              <p className="text-xs text-muted-foreground">Total</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-bold text-orange-500">{bestStreak}</p>
-              <p className="text-xs text-muted-foreground">Streak 🔥</p>
-            </div>
-          </div>
-          <p className="text-lg font-semibold text-foreground">{percentage}%</p>
-        </Card>
-        <div className="flex gap-2">
-          <Button variant="outline" className="flex-1" onClick={onReset}>
-            <RotateCcw className="w-4 h-4 mr-2" />
-            Ulangi
-          </Button>
-          <Button className="flex-1" onClick={onBackToSurah}>
-            Pilih Surah Lain
-          </Button>
-        </div>
-      </div>
+      <QuizFinishedCard
+        surahDetail={surahDetail}
+        score={score}
+        totalAnswered={totalAnswered}
+        bestStreak={quizState.bestStreak}
+        onReset={onReset}
+        onBackToSurah={onBackToSurah}
+      />
     );
   }
 
@@ -117,23 +146,26 @@ export function SurahQuizPlayer({
       {/* Question */}
       <Card className="p-5 text-center space-y-3">
         <p className="text-xs text-muted-foreground">
-          {surahDetail.namaLatin} • Ayat {currentQuestion.ayah.nomorAyat}
+          {surahDetail.namaLatin} • Kosakata Al-Quran
         </p>
         <p className="text-sm text-muted-foreground">
-          {isArabicToIndo ? "Apa terjemahan ayat ini?" : "Ayat Arab untuk terjemahan ini:"}
+          {isArabicToIndo ? "Apa arti kata ini?" : "Kata Arab untuk arti ini:"}
         </p>
 
         {isArabicToIndo ? (
           <div>
-            <p className="text-2xl md:text-3xl font-arabic leading-loose text-foreground text-right" dir="rtl">
-              {currentQuestion.ayah.teksArab}
+            <p className="text-4xl md:text-5xl font-arabic leading-loose text-foreground" dir="rtl">
+              {word.arabic}
             </p>
+            <p className="text-xs text-muted-foreground mt-2 italic">{word.transliteration}</p>
           </div>
         ) : (
-          <p className="text-base text-foreground leading-relaxed">
-            {currentQuestion.ayah.teksIndonesia}
-          </p>
+          <div>
+            <p className="text-2xl font-bold text-foreground">{word.indonesian}</p>
+          </div>
         )}
+
+        <Badge variant="outline" className="text-xs">{word.category}</Badge>
       </Card>
 
       {/* Options */}
@@ -162,8 +194,7 @@ export function SurahQuizPlayer({
                 <span
                   className={cn(
                     "text-sm leading-relaxed",
-                    isArabicToIndo ? "text-foreground" : "text-xl font-arabic text-foreground",
-                    !isArabicToIndo && "text-right w-full"
+                    !isArabicToIndo ? "text-2xl font-arabic text-foreground text-right w-full" : "text-foreground"
                   )}
                   dir={!isArabicToIndo ? "rtl" : undefined}
                 >
@@ -192,11 +223,11 @@ export function SurahQuizPlayer({
                 {isCorrect ? "Benar! 🎉" : "Kurang tepat"}
               </span>
             </div>
-            <p className="text-xl font-arabic text-foreground text-right mb-2" dir="rtl">
-              {currentQuestion.ayah.teksArab}
+            <p className="text-3xl font-arabic text-foreground text-center mb-2" dir="rtl">
+              {word.arabic}
             </p>
-            <p className="text-sm text-foreground">{currentQuestion.ayah.teksIndonesia}</p>
-            <p className="text-xs text-muted-foreground mt-1 italic">{currentQuestion.ayah.teksLatin}</p>
+            <p className="text-sm text-foreground text-center font-semibold">{word.indonesian}</p>
+            <p className="text-xs text-muted-foreground text-center mt-1 italic">{word.transliteration}</p>
           </Card>
 
           <Button className="w-full" size="lg" onClick={onNext}>
