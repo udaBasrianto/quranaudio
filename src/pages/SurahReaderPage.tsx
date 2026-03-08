@@ -14,7 +14,7 @@ const SurahReaderPage = () => {
   const initialAyah = ayahParam ? parseInt(ayahParam.split("-")[0], 10) : null;
 
   const { isBookmarked, toggleBookmark } = useBookmarks();
-  const { arabicFontSize } = useTheme();
+  const { getArabicFontStyle } = useTheme();
   const { data: surahsData } = useSurahs();
 
   const surahName =
