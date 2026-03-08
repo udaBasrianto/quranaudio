@@ -41,9 +41,6 @@ const Index = () => {
   const [ayahSearchQuery, setAyahSearchQuery] = useState("");
   const [currentAyahIndex, setCurrentAyahIndex] = useState<number | null>(null);
   const [totalAyahs, setTotalAyahs] = useState<number>(0);
-  const [showDzikirCounter, setShowDzikirCounter] = useState(false);
-  const [showDzikirPagiPetang, setShowDzikirPagiPetang] = useState(false);
-  const [showPrayerTimes, setShowPrayerTimes] = useState(false);
   const [selectedJuz, setSelectedJuz] = useState<string>("all");
   const [juzPlaylist, setJuzPlaylist] = useState<number[] | null>(null);
 
