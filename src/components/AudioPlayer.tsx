@@ -33,6 +33,7 @@ export function AudioPlayer({
   onTimeUpdate,
   getOfflineAudioUrl,
   isOffline,
+  activeJuz,
 }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
