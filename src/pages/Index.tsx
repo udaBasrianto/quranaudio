@@ -48,6 +48,7 @@ const Index = () => {
   const [showDzikirPagiPetang, setShowDzikirPagiPetang] = useState(false);
   const [showPrayerTimes, setShowPrayerTimes] = useState(false);
   const [selectedJuz, setSelectedJuz] = useState<string>("all");
+  const [juzPlaylist, setJuzPlaylist] = useState<number[] | null>(null);
 
   const { data: recitersData, isLoading: isLoadingReciters } = useReciters();
   const { data: surahsData, isLoading: isLoadingSurahs } = useSurahs();
