@@ -18,6 +18,7 @@ interface AudioPlayerProps {
   onTimeUpdate?: (currentTime: number, duration: number) => void;
   getOfflineAudioUrl?: (reciterId: number, moshafId: number, surahId: number) => Promise<string | null>;
   isOffline?: boolean;
+  activeJuz?: number;
 }
 
 export function AudioPlayer({
