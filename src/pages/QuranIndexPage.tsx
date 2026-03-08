@@ -159,18 +159,33 @@ const QuranIndexPage = () => {
 function IndexEntryItem({ entry }: { entry: QuranIndexEntry }) {
   const navigate = useNavigate();
 
+  const formatText = () => {
+    let text = `📖 ${entry.title}\n`;
+    if (entry.arabic) text += `\n${entry.arabic}\n`;
+    text += `\nQS. ${entry.surahName} (${entry.surah}): ${entry.ayah}`;
+    return text;
+  };
+
   const handleClick = () => {
-    const ayah = typeof entry.ayah === "number" ? entry.ayah : entry.ayah.toString().split("-")[0];
     navigate(`/surah/${entry.surah}?ayah=${entry.ayah}`);
   };
 
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(formatText());
+    toast.success("Tersalin ke clipboard!");
+  };
+
+  const handleWhatsApp = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const url = `https://wa.me/?text=${encodeURIComponent(formatText())}`;
+    window.open(url, "_blank");
+  };
+
   return (
-    <button
-      onClick={handleClick}
-      className="w-full text-left px-4 py-3 hover:bg-muted/30 transition-colors group cursor-pointer"
-    >
+    <div className="w-full text-left px-4 py-3 hover:bg-muted/30 transition-colors group">
       <div className="flex items-start justify-between gap-2">
-        <div className="flex-1 min-w-0">
+        <button onClick={handleClick} className="flex-1 min-w-0 text-left cursor-pointer">
           <p className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">{entry.title}</p>
           {entry.arabic && (
             <p className="text-lg font-arabic text-primary mt-1 leading-relaxed text-right" dir="rtl">
@@ -180,10 +195,32 @@ function IndexEntryItem({ entry }: { entry: QuranIndexEntry }) {
           <p className="text-xs text-muted-foreground mt-1">
             📖 QS. {entry.surahName} ({entry.surah}): {entry.ayah}
           </p>
+        </button>
+        <div className="flex items-center gap-1 shrink-0 mt-1">
+          <button
+            onClick={handleCopy}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-all opacity-0 group-hover:opacity-100"
+            title="Salin ke clipboard"
+          >
+            <Copy className="w-4 h-4" />
+          </button>
+          <button
+            onClick={handleWhatsApp}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-950 transition-all opacity-0 group-hover:opacity-100"
+            title="Bagikan ke WhatsApp"
+          >
+            <MessageCircle className="w-4 h-4" />
+          </button>
+          <button
+            onClick={handleClick}
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-muted transition-all opacity-0 group-hover:opacity-100"
+            title="Buka ayat"
+          >
+            <ExternalLink className="w-4 h-4" />
+          </button>
         </div>
-        <ExternalLink className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity mt-1 shrink-0" />
       </div>
-    </button>
+    </div>
   );
 }
 
