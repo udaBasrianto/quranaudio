@@ -10,8 +10,6 @@ import { SurahTextViewer } from "@/components/SurahTextViewer";
 import { BookmarksList } from "@/components/BookmarksList";
 import { AyahSearchResults } from "@/components/AyahSearchResults";
 import { ReciterSkeleton, SurahSkeleton } from "@/components/LoadingSkeleton";
-import { PrayerTimesWidget } from "@/components/PrayerTimesWidget";
-import { DzikirCounter } from "@/components/DzikirCounter";
 import { DzikirPagiPetang } from "@/components/DzikirPagiPetang";
 import { useReciters, useSurahs } from "@/hooks/useQuranData";
 import { useFavorites } from "@/hooks/useFavorites";
