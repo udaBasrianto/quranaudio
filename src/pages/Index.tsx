@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Header } from "@/components/Header";
+import { AppSidebar } from "@/components/AppSidebar";
 import { TabNavigation } from "@/components/TabNavigation";
 import { SearchInput } from "@/components/SearchInput";
 import { ReciterCard } from "@/components/ReciterCard";
@@ -19,9 +19,17 @@ import { useBookmarks } from "@/hooks/useBookmarks";
 import { useOfflineAudio } from "@/hooks/useOfflineAudio";
 import { useTheme, FontSize } from "@/hooks/useTheme";
 import { Reciter, Surah, Moshaf } from "@/types/quran";
-import { ArrowLeft, Hand, Sun, Clock, ChevronDown, ChevronUp, Users, Download, DownloadCloud, Loader2, HardDrive, GraduationCap } from "lucide-react";
+import { ArrowLeft, Users, Download, DownloadCloud, Loader2, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { juzData, getSurahsInJuz } from "@/data/juzData";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -39,28 +47,29 @@ const Index = () => {
   const [showDzikirCounter, setShowDzikirCounter] = useState(false);
   const [showDzikirPagiPetang, setShowDzikirPagiPetang] = useState(false);
   const [showPrayerTimes, setShowPrayerTimes] = useState(false);
+  const [selectedJuz, setSelectedJuz] = useState<string>("all");
 
   const { data: recitersData, isLoading: isLoadingReciters } = useReciters();
   const { data: surahsData, isLoading: isLoadingSurahs } = useSurahs();
   const { isReciterFavorite, isSurahFavorite, toggleReciterFavorite, toggleSurahFavorite } = useFavorites();
   const { bookmarks, isBookmarked, toggleBookmark, removeBookmark } = useBookmarks();
-  const { 
-    isDownloaded, 
-    getDownloadProgress, 
-    downloadAudio, 
-    getOfflineAudioUrl, 
+  const {
+    isDownloaded,
+    getDownloadProgress,
+    downloadAudio,
+    getOfflineAudioUrl,
     deleteAudio,
     getDownloadedCount,
     batchProgress,
     downloadAllSurahs,
   } = useOfflineAudio();
-  const { 
-    theme, 
-    toggleTheme, 
-    themeColor, 
-    setThemeColor, 
-    arabicFontSize, 
-    setArabicFontSize, 
+  const {
+    theme,
+    toggleTheme,
+    themeColor,
+    setThemeColor,
+    arabicFontSize,
+    setArabicFontSize,
     getArabicFontStyle,
     autoNightMode,
     setAutoNightMode,
@@ -81,11 +90,22 @@ const Index = () => {
 
   const filteredSurahs = useMemo(() => {
     if (!surahsData?.suwar) return [];
-    if (!searchQuery) return surahsData.suwar;
-    return surahsData.suwar.filter((surah) =>
-      surah.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [surahsData, searchQuery]);
+    let surahs = surahsData.suwar;
+
+    // Filter by juz
+    if (selectedJuz !== "all") {
+      const juzNumber = parseInt(selectedJuz);
+      const surahsInJuz = getSurahsInJuz(juzNumber);
+      surahs = surahs.filter((s) => surahsInJuz.includes(s.id));
+    }
+
+    if (searchQuery) {
+      surahs = surahs.filter((surah) =>
+        surah.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    return surahs;
+  }, [surahsData, searchQuery, selectedJuz]);
 
   const availableSurahs = useMemo(() => {
     if (!selectedMoshaf) return [];
@@ -110,6 +130,7 @@ const Index = () => {
     setSelectedMoshaf(null);
     setActiveTab("reciters");
     setSearchQuery("");
+    setSelectedJuz("all");
   };
 
   const handleClosePlayer = () => {
@@ -119,7 +140,6 @@ const Index = () => {
 
   const handleTimeUpdate = useCallback((currentTime: number, duration: number) => {
     if (totalAyahs > 0 && duration > 0) {
-      // Estimate current ayah based on time proportion
       const progress = currentTime / duration;
       const estimatedAyah = Math.floor(progress * totalAyahs) + 1;
       setCurrentAyahIndex(Math.min(estimatedAyah, totalAyahs));
@@ -132,14 +152,8 @@ const Index = () => {
 
   const handleDownloadSurah = useCallback(async (surah: Surah) => {
     if (!selectedReciter || !selectedMoshaf) return;
-    
     try {
-      await downloadAudio(
-        selectedReciter.id,
-        selectedMoshaf.id,
-        surah.id,
-        selectedMoshaf.server
-      );
+      await downloadAudio(selectedReciter.id, selectedMoshaf.id, surah.id, selectedMoshaf.server);
       toast.success(`${surah.name} berhasil didownload untuk offline`);
     } catch (error) {
       toast.error(`Gagal mendownload ${surah.name}`);
@@ -148,7 +162,6 @@ const Index = () => {
 
   const handleDeleteDownload = useCallback(async (surah: Surah) => {
     if (!selectedReciter || !selectedMoshaf) return;
-    
     try {
       await deleteAudio(selectedReciter.id, selectedMoshaf.id, surah.id);
       toast.success(`Download ${surah.name} dihapus`);
@@ -169,9 +182,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      <Header 
-        theme={theme} 
-        onToggleTheme={toggleTheme} 
+      <AppSidebar
+        theme={theme}
+        onToggleTheme={toggleTheme}
         bookmarkCount={bookmarks.length}
         onShowBookmarks={() => setShowBookmarks(true)}
         themeColor={themeColor}
@@ -186,79 +199,16 @@ const Index = () => {
         customNightEnd={customNightEnd}
         onCustomNightEndChange={setCustomNightEnd}
         prayerTimes={prayerTimes}
+        onShowPrayerTimes={() => setShowPrayerTimes(!showPrayerTimes)}
+        onShowDzikirCounter={() => setShowDzikirCounter(!showDzikirCounter)}
+        onShowDzikirPagiPetang={() => setShowDzikirPagiPetang(!showDzikirPagiPetang)}
       />
 
       <main className="container mx-auto px-4 py-4 space-y-4">
-        {/* Prayer Times Widget & Dzikir */}
-        {!selectedReciter && (
-          <>
-            {/* Prayer Times Toggle */}
-            <Button
-              variant="outline"
-              className="w-full justify-between"
-              onClick={() => setShowPrayerTimes(!showPrayerTimes)}
-            >
-              <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4" />
-                <span>Waktu Sholat</span>
-              </div>
-              {showPrayerTimes ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </Button>
-            {showPrayerTimes && <PrayerTimesWidget />}
-            
-            {/* Dzikir Counter Toggle */}
-            <Button
-              variant="outline"
-              className="w-full justify-between"
-              onClick={() => setShowDzikirCounter(!showDzikirCounter)}
-            >
-              <div className="flex items-center gap-2">
-                <Hand className="w-4 h-4" />
-                <span>Dzikir Counter</span>
-              </div>
-              {showDzikirCounter ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </Button>
-            {showDzikirCounter && <DzikirCounter />}
-            
-            {/* Dzikir Pagi Petang Toggle */}
-            <Button
-              variant="outline"
-              className="w-full justify-between"
-              onClick={() => setShowDzikirPagiPetang(!showDzikirPagiPetang)}
-            >
-              <div className="flex items-center gap-2">
-                <Sun className="w-4 h-4" />
-                <span>Dzikir Pagi & Petang</span>
-              </div>
-              {showDzikirPagiPetang ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </Button>
-            {showDzikirPagiPetang && <DzikirPagiPetang />}
-
-            {/* Quran Quiz */}
-            <Button
-              variant="outline"
-              className="w-full justify-between"
-              onClick={() => navigate("/quran-quiz")}
-            >
-              <div className="flex items-center gap-2">
-                <GraduationCap className="w-4 h-4" />
-                <span>Kuis Kosakata Al-Quran</span>
-              </div>
-            </Button>
-
-            {/* Offline Storage Management */}
-            <Button
-              variant="outline"
-              className="w-full justify-between"
-              onClick={() => navigate("/offline-storage")}
-            >
-              <div className="flex items-center gap-2">
-                <HardDrive className="w-4 h-4" />
-                <span>Manajemen Storage Offline</span>
-              </div>
-            </Button>
-          </>
-        )}
+        {/* Collapsible widgets */}
+        {showPrayerTimes && <PrayerTimesWidget />}
+        {showDzikirCounter && <DzikirCounter />}
+        {showDzikirPagiPetang && <DzikirPagiPetang />}
 
         {/* Tab Navigation or Back Button */}
         {selectedReciter ? (
@@ -270,7 +220,7 @@ const Index = () => {
               <ArrowLeft className="w-4 h-4" />
               Kembali ke Daftar Qari
             </button>
-            <div className="bg-primary/10 border border-primary/20 rounded-lg p-4">
+            <div className="bg-primary/10 border border-primary/20 rounded-xl p-4">
               <h2 className="font-semibold text-foreground">{selectedReciter.name}</h2>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <span>{selectedMoshaf?.name} • {selectedMoshaf?.surah_total} Surah</span>
@@ -281,9 +231,9 @@ const Index = () => {
                   </span>
                 )}
               </div>
-              
-              {/* Download All Button */}
-              <div className="flex flex-col gap-2">
+
+              {/* Download All */}
+              <div className="flex flex-col gap-2 mt-3">
                 {batchProgress.downloading ? (
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
@@ -296,7 +246,7 @@ const Index = () => {
                       </span>
                     </div>
                     <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-primary rounded-full transition-all duration-300"
                         style={{ width: `${(batchProgress.current / batchProgress.total) * 100}%` }}
                       />
@@ -313,11 +263,28 @@ const Index = () => {
                     <DownloadCloud className="w-4 h-4 mr-2" />
                     {getDownloadedCount(selectedReciter.id, selectedMoshaf!.id) >= availableSurahs.length
                       ? "Semua surah sudah didownload"
-                      : `Download Semua Surah (${availableSurahs.length - getDownloadedCount(selectedReciter.id, selectedMoshaf!.id)} tersisa)`
-                    }
+                      : `Download Semua Surah (${availableSurahs.length - getDownloadedCount(selectedReciter.id, selectedMoshaf!.id)} tersisa)`}
                   </Button>
                 )}
               </div>
+            </div>
+
+            {/* Juz Filter */}
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-muted-foreground" />
+              <Select value={selectedJuz} onValueChange={setSelectedJuz}>
+                <SelectTrigger className="flex-1 h-9 rounded-xl">
+                  <SelectValue placeholder="Filter per Juz" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Semua Juz</SelectItem>
+                  {juzData.map((juz) => (
+                    <SelectItem key={juz.juz} value={juz.juz.toString()}>
+                      Juz {juz.juz} — {juz.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
         ) : (
@@ -365,12 +332,12 @@ const Index = () => {
           {(activeTab === "surahs" || selectedReciter) && (
             <>
               {!selectedReciter ? (
-                <div className="text-center py-12 bg-card rounded-lg border">
+                <div className="text-center py-12 bg-card rounded-xl border">
                   <Users className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
                   <p className="text-muted-foreground font-medium">Pilih Qari Terlebih Dahulu</p>
-                  <p className="text-sm text-muted-foreground mt-2">Klik tab "Qari" untuk memilih qari yang akan membacakan surah</p>
-                  <Button 
-                    variant="outline" 
+                  <p className="text-sm text-muted-foreground mt-2">Klik tab "Qari" untuk memilih qari</p>
+                  <Button
+                    variant="outline"
                     className="mt-4"
                     onClick={() => setActiveTab("reciters")}
                   >
@@ -385,21 +352,23 @@ const Index = () => {
                   <p>Tidak ada surah ditemukan</p>
                 </div>
               ) : (
-                filteredSurahs.map((surah) => (
-                  <SurahCard
-                    key={surah.id}
-                    surah={surah}
-                    onClick={() => handleSurahSelect(surah)}
-                    isPlaying={currentSurah?.id === surah.id}
-                    isDisabled={!availableSurahs.includes(surah.id)}
-                    isFavorite={isSurahFavorite(surah.id)}
-                    onToggleFavorite={() => toggleSurahFavorite(surah.id)}
-                    isDownloaded={isDownloaded(selectedReciter.id, selectedMoshaf.id, surah.id)}
-                    downloadProgress={getDownloadProgress(selectedReciter.id, selectedMoshaf.id, surah.id)}
-                    onDownload={() => handleDownloadSurah(surah)}
-                    onDeleteDownload={() => handleDeleteDownload(surah)}
-                  />
-                ))
+                <div className="space-y-2">
+                  {filteredSurahs.map((surah) => (
+                    <SurahCard
+                      key={surah.id}
+                      surah={surah}
+                      onClick={() => handleSurahSelect(surah)}
+                      isPlaying={currentSurah?.id === surah.id}
+                      isDisabled={!availableSurahs.includes(surah.id)}
+                      isFavorite={isSurahFavorite(surah.id)}
+                      onToggleFavorite={() => toggleSurahFavorite(surah.id)}
+                      isDownloaded={isDownloaded(selectedReciter.id, selectedMoshaf!.id, surah.id)}
+                      downloadProgress={getDownloadProgress(selectedReciter.id, selectedMoshaf!.id, surah.id)}
+                      onDownload={() => handleDownloadSurah(surah)}
+                      onDeleteDownload={() => handleDeleteDownload(surah)}
+                    />
+                  ))}
+                </div>
               )}
             </>
           )}
