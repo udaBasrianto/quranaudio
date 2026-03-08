@@ -1,0 +1,28 @@
+import { QuranIndexEntry } from "../quranIndex";
+
+export const umatTerdahuluEntries: QuranIndexEntry[] = [
+  { title: "Kaum 'Ad & angin yang membinasakan", surah: 69, ayah: "6-8", surahName: "Al-Haqqah" },
+  { title: "Kaum Tsamud & petir yang membinasakan", surah: 69, ayah: "4-5", surahName: "Al-Haqqah" },
+  { title: "Kaum Nabi Luth & hujan batu", surah: 15, ayah: "73-77", surahName: "Al-Hijr" },
+  { title: "Fir'aun & tentaranya ditenggelamkan", surah: 28, ayah: "38-42", surahName: "Al-Qashash" },
+  { title: "Bani Israil menyembah sapi emas", surah: 7, ayah: "148-153", surahName: "Al-A'raf" },
+  { title: "Bani Israil & Mann wa Salwa", surah: 2, ayah: 57, surahName: "Al-Baqarah" },
+  { title: "Kaum Saba' & banjir besar ('Arim)", surah: 34, ayah: "15-19", surahName: "Saba'" },
+  { title: "Ashabul Ukhdud (parit api)", surah: 85, ayah: "4-9", surahName: "Al-Buruj" },
+  { title: "Ashabul Kahfi (pemuda gua)", surah: 18, ayah: "9-26", surahName: "Al-Kahf" },
+  { title: "Ashabul Fil (pasukan gajah)", surah: 105, ayah: "1-5", surahName: "Al-Fil" },
+  { title: "Kisah Qarun (harta melimpah)", surah: 28, ayah: "76-82", surahName: "Al-Qashash" },
+  { title: "Kisah Haman (menteri Fir'aun)", surah: 28, ayah: "38-39", surahName: "Al-Qashash" },
+  { title: "Kaum Madyan (curang timbangan)", surah: 7, ayah: "85-93", surahName: "Al-A'raf" },
+  { title: "Kaum Tubba'", surah: 44, ayah: "37", surahName: "Ad-Dukhan" },
+  { title: "Ashabur Rass", surah: 25, ayah: "38-39", surahName: "Al-Furqan" },
+  { title: "Bani Israil melanggar hari Sabat (menjadi kera)", surah: 7, ayah: "163-166", surahName: "Al-A'raf" },
+  { title: "Thalut & tentaranya", surah: 2, ayah: "247-249", surahName: "Al-Baqarah" },
+  { title: "Uzair dihidupkan setelah 100 tahun", surah: 2, ayah: 259, surahName: "Al-Baqarah" },
+  { title: "Kaum yang keluar dari rumah karena maut", surah: 2, ayah: 243, surahName: "Al-Baqarah" },
+  { title: "Samiri & patung sapi", surah: 20, ayah: "85-97", surahName: "Taha" },
+  { title: "Namrud & lalat yang membunuhnya", surah: 2, ayah: 258, surahName: "Al-Baqarah" },
+  { title: "Fir'aun mengaku Tuhan", surah: 79, ayah: "24", surahName: "An-Nazi'at" },
+  { title: "Jasad Fir'aun diselamatkan sebagai pelajaran", surah: 10, ayah: 92, surahName: "Yunus" },
+  { title: "Kaum Nabi Nuh yang durhaka", surah: 54, ayah: "9-17", surahName: "Al-Qamar" },
+];

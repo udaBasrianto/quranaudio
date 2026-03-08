@@ -1,0 +1,25 @@
+import { QuranIndexEntry } from "../quranIndex";
+
+export const ekonomiIslamEntries: QuranIndexEntry[] = [
+  { title: "Larangan riba (bunga)", surah: 2, ayah: "275-279", surahName: "Al-Baqarah" },
+  { title: "Riba dihapuskan, sedekah ditumbuhkan", surah: 2, ayah: 276, surahName: "Al-Baqarah" },
+  { title: "Jual beli halal, riba haram", surah: 2, ayah: 275, surahName: "Al-Baqarah" },
+  { title: "Pencatatan hutang piutang", surah: 2, ayah: 282, surahName: "Al-Baqarah" },
+  { title: "Gadai (rahn) sebagai jaminan", surah: 2, ayah: 283, surahName: "Al-Baqarah" },
+  { title: "Anjuran berinfaq di jalan Allah", surah: 2, ayah: "261-262", surahName: "Al-Baqarah" },
+  { title: "Larangan memakan harta secara batil", surah: 4, ayah: 29, surahName: "An-Nisa" },
+  { title: "Larangan menyuap hakim", surah: 2, ayah: 188, surahName: "Al-Baqarah" },
+  { title: "Penyaluran zakat (8 golongan)", surah: 9, ayah: 60, surahName: "At-Taubah" },
+  { title: "Larangan menimbun harta (kanz)", surah: 9, ayah: 34, surahName: "At-Taubah" },
+  { title: "Perumpamaan sedekah berlipat ganda", surah: 2, ayah: 261, surahName: "Al-Baqarah" },
+  { title: "Larangan curang dalam timbangan", surah: 83, ayah: "1-6", surahName: "Al-Muthaffifin" },
+  { title: "Kewajiban menyempurnakan takaran", surah: 6, ayah: 152, surahName: "Al-An'am" },
+  { title: "Perintah mencari rezeki setelah shalat", surah: 62, ayah: 10, surahName: "Al-Jumu'ah" },
+  { title: "Memberi tangguhan kepada yang kesulitan", surah: 2, ayah: 280, surahName: "Al-Baqarah" },
+  { title: "Harta anak yatim harus dijaga", surah: 4, ayah: "2-6", surahName: "An-Nisa" },
+  { title: "Larangan memakan harta anak yatim", surah: 4, ayah: 10, surahName: "An-Nisa" },
+  { title: "Infaq yang tidak diikuti menyakiti", surah: 2, ayah: 264, surahName: "Al-Baqarah" },
+  { title: "Harta fai' dan distribusinya", surah: 59, ayah: 7, surahName: "Al-Hasyr" },
+  { title: "Peringatan bermegah-megahan", surah: 102, ayah: "1-8", surahName: "At-Takatsur" },
+  { title: "Kisah Qarun yang kaya raya", surah: 28, ayah: "76-82", surahName: "Al-Qashash" },
+];

@@ -1,0 +1,27 @@
+import { QuranIndexEntry } from "../quranIndex";
+
+export const ibadahEntries: QuranIndexEntry[] = [
+  { title: "Perintah shalat", surah: 2, ayah: 43, surahName: "Al-Baqarah" },
+  { title: "Tata cara shalat (ruku, sujud)", surah: 22, ayah: 77, surahName: "Al-Hajj" },
+  { title: "Kewajiban puasa Ramadhan", surah: 2, ayah: "183-185", surahName: "Al-Baqarah" },
+  { title: "Kewajiban zakat", surah: 9, ayah: 60, surahName: "At-Taubah" },
+  { title: "Kewajiban haji", surah: 3, ayah: 97, surahName: "Ali Imran" },
+  { title: "Manasik haji", surah: 2, ayah: "196-203", surahName: "Al-Baqarah" },
+  { title: "Hukum waris (faraid)", surah: 4, ayah: "11-12", surahName: "An-Nisa" },
+  { title: "Hukum nikah & mahar", surah: 4, ayah: "3-4", surahName: "An-Nisa" },
+  { title: "Hukum jual beli & riba", surah: 2, ayah: "275-280", surahName: "Al-Baqarah" },
+  { title: "Larangan riba", surah: 3, ayah: 130, surahName: "Ali Imran" },
+  { title: "Hukum qishas", surah: 2, ayah: "178-179", surahName: "Al-Baqarah" },
+  { title: "Hukum hudud pencurian", surah: 5, ayah: 38, surahName: "Al-Ma'idah" },
+  { title: "Hukum makanan halal & haram", surah: 5, ayah: "3-5", surahName: "Al-Ma'idah" },
+  { title: "Larangan khamr & judi", surah: 5, ayah: "90-91", surahName: "Al-Ma'idah" },
+  { title: "Wudhu & tayammum", surah: 5, ayah: 6, surahName: "Al-Ma'idah" },
+  { title: "Anjuran infaq & sedekah", surah: 2, ayah: "261-267", surahName: "Al-Baqarah" },
+  { title: "Shalat Jumat", surah: 62, ayah: "9-11", surahName: "Al-Jumu'ah" },
+  { title: "Qurban (hewan sembelihan)", surah: 22, ayah: "34-37", surahName: "Al-Hajj" },
+  { title: "Shalat malam (Tahajjud)", surah: 17, ayah: 79, surahName: "Al-Isra" },
+  { title: "Nazar dan sumpah", surah: 76, ayah: 7, surahName: "Al-Insan" },
+  { title: "I'tikaf di masjid", surah: 2, ayah: 187, surahName: "Al-Baqarah" },
+  { title: "Hukum wasiat", surah: 2, ayah: 180, surahName: "Al-Baqarah" },
+  { title: "Kaffarah sumpah", surah: 5, ayah: 89, surahName: "Al-Ma'idah" },
+];
