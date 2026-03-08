@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Search, X, BookOpen, ChevronDown, ChevronUp, ExternalLink } from "lucide-react";
+import { ArrowLeft, Search, X, BookOpen, ChevronDown, ChevronUp, ExternalLink, Share2, Copy, MessageCircle } from "lucide-react";
+import { toast } from "sonner";
 import { quranIndex, QuranIndexCategory, QuranIndexEntry } from "@/data/quranIndex";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
