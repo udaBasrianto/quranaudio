@@ -218,16 +218,9 @@ const Index = () => {
         customNightEnd={customNightEnd}
         onCustomNightEndChange={setCustomNightEnd}
         prayerTimes={prayerTimes}
-        onShowPrayerTimes={() => setShowPrayerTimes(!showPrayerTimes)}
-        onShowDzikirCounter={() => setShowDzikirCounter(!showDzikirCounter)}
-        onShowDzikirPagiPetang={() => setShowDzikirPagiPetang(!showDzikirPagiPetang)}
       />
 
       <main className="container mx-auto px-4 py-4 space-y-4">
-        {/* Collapsible widgets */}
-        {showPrayerTimes && <PrayerTimesWidget />}
-        {showDzikirCounter && <DzikirCounter />}
-        {showDzikirPagiPetang && <DzikirPagiPetang />}
 
         {/* Tab Navigation or Back Button */}
         {selectedReciter ? (
