@@ -206,7 +206,7 @@ function IndexEntryItem({ entry }: { entry: QuranIndexEntry }) {
           </button>
           <button
             onClick={handleWhatsApp}
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-green-600 hover:bg-green-50 dark:hover:bg-green-950 transition-all opacity-0 group-hover:opacity-100"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-muted transition-all opacity-0 group-hover:opacity-100"
             title="Bagikan ke WhatsApp"
           >
             <MessageCircle className="w-4 h-4" />
