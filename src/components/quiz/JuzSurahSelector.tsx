@@ -19,7 +19,7 @@ export function JuzSurahSelector({ selectedJuz, onSelectJuz, onSelectSurah, onBa
     const juz = juzData.find((j) => j.juz === selectedJuz);
     if (!juz) return null;
 
-    const surahsInJuz = surahs?.filter((s) => juz.surahs.includes(s.id)) || [];
+    const surahsInJuz = surahs?.suwar?.filter((s) => juz.surahs.includes(s.id)) || [];
 
     return (
       <div className="space-y-4">
