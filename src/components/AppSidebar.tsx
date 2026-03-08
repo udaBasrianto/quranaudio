@@ -33,9 +33,6 @@ interface AppSidebarProps {
   customNightEnd: string;
   onCustomNightEndChange: (time: string) => void;
   prayerTimes: PrayerTimes | null;
-  onShowPrayerTimes?: () => void;
-  onShowDzikirCounter?: () => void;
-  onShowDzikirPagiPetang?: () => void;
 }
 
 export function AppSidebar({
@@ -55,9 +52,6 @@ export function AppSidebar({
   customNightEnd,
   onCustomNightEndChange,
   prayerTimes,
-  onShowPrayerTimes,
-  onShowDzikirCounter,
-  onShowDzikirPagiPetang,
 }: AppSidebarProps) {
   const navigate = useNavigate();
   const { user, isAdmin, signOut } = useAuth();
