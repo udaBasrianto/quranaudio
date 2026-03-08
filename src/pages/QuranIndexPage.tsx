@@ -1,15 +1,17 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Search, X, BookOpen, ChevronDown, ChevronUp, ExternalLink, Share2, Copy, MessageCircle } from "lucide-react";
+import { ArrowLeft, Search, X, BookOpen, ChevronDown, ChevronUp, ExternalLink, Copy, MessageCircle, Heart } from "lucide-react";
 import { toast } from "sonner";
 import { quranIndex, QuranIndexCategory, QuranIndexEntry } from "@/data/quranIndex";
-import { Button } from "@/components/ui/button";
+import { useIndexBookmarks } from "@/hooks/useIndexBookmarks";
 import { cn } from "@/lib/utils";
 
 const QuranIndexPage = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
+  const [showFavorites, setShowFavorites] = useState(false);
+  const { bookmarks, isBookmarked, toggle } = useIndexBookmarks();
 
   const toggleCategory = (id: string) => {
     setExpandedCategories((prev) =>
@@ -18,9 +20,21 @@ const QuranIndexPage = () => {
   };
 
   const filteredIndex = useMemo(() => {
-    if (!searchQuery.trim()) return quranIndex;
+    let source = quranIndex;
+
+    // Filter by favorites
+    if (showFavorites) {
+      source = source
+        .map((cat) => ({
+          ...cat,
+          entries: cat.entries.filter((e) => isBookmarked(e.surah, e.ayah)),
+        }))
+        .filter((cat) => cat.entries.length > 0);
+    }
+
+    if (!searchQuery.trim()) return source;
     const q = searchQuery.toLowerCase();
-    return quranIndex
+    return source
       .map((cat) => ({
         ...cat,
         entries: cat.entries.filter(
@@ -31,21 +45,19 @@ const QuranIndexPage = () => {
         ),
       }))
       .filter((cat) => cat.entries.length > 0);
-  }, [searchQuery]);
+  }, [searchQuery, showFavorites, isBookmarked]);
 
   const totalEntries = useMemo(
     () => quranIndex.reduce((sum, cat) => sum + cat.entries.length, 0),
     []
   );
 
-  // Auto-expand all when searching
-  const displayCategories = searchQuery.trim()
+  const displayCategories = searchQuery.trim() || showFavorites
     ? filteredIndex.map((c) => c.id)
     : expandedCategories;
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="sticky top-0 z-40 bg-primary text-primary-foreground shadow-lg">
         <div className="flex items-center gap-3 px-4 py-3">
           <button
@@ -54,7 +66,7 @@ const QuranIndexPage = () => {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <div className="flex items-center gap-2">
+          <div className="flex-1 flex items-center gap-2">
             <BookOpen className="w-5 h-5" />
             <div>
               <h1 className="text-lg font-bold leading-tight">Indeks Al-Quran</h1>
@@ -63,6 +75,22 @@ const QuranIndexPage = () => {
               </p>
             </div>
           </div>
+          <button
+            onClick={() => setShowFavorites(!showFavorites)}
+            className={cn(
+              "w-10 h-10 rounded-xl flex items-center justify-center transition-all relative",
+              showFavorites
+                ? "bg-primary-foreground/25"
+                : "bg-primary-foreground/15 hover:bg-primary-foreground/25"
+            )}
+          >
+            <Heart className={cn("w-5 h-5", showFavorites && "fill-current")} />
+            {bookmarks.length > 0 && (
+              <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold flex items-center justify-center">
+                {bookmarks.length}
+              </span>
+            )}
+          </button>
         </div>
       </header>
 
@@ -74,7 +102,7 @@ const QuranIndexPage = () => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cari doa, kisah, peristiwa, hukum..."
+            placeholder={showFavorites ? "Cari di favorit..." : "Cari doa, kisah, peristiwa, hukum..."}
             className="w-full pl-10 pr-10 py-3 rounded-xl border border-border bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
           />
           {searchQuery && (
@@ -87,31 +115,61 @@ const QuranIndexPage = () => {
           )}
         </div>
 
-        {/* Quick stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {quranIndex.slice(0, 4).map((cat) => (
+        {/* Favorites banner */}
+        {showFavorites && (
+          <div className="bg-primary/10 border border-primary/20 rounded-xl px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Heart className="w-4 h-4 text-primary fill-primary" />
+              <p className="text-sm font-medium text-foreground">
+                {bookmarks.length} referensi favorit
+              </p>
+            </div>
             <button
-              key={cat.id}
-              onClick={() => {
-                setSearchQuery("");
-                setExpandedCategories([cat.id]);
-                document.getElementById(`cat-${cat.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-              }}
-              className="bg-card border border-border rounded-xl p-3 text-center hover:bg-muted transition-colors"
+              onClick={() => setShowFavorites(false)}
+              className="text-xs text-primary font-medium hover:underline"
             >
-              <span className="text-2xl">{cat.icon}</span>
-              <p className="text-xs font-medium text-foreground mt-1 truncate">{cat.name.split(" ").slice(0, 2).join(" ")}</p>
-              <p className="text-[10px] text-muted-foreground">{cat.entries.length} item</p>
+              Tampilkan semua
             </button>
-          ))}
-        </div>
+          </div>
+        )}
+
+        {/* Quick stats - hide when showing favorites */}
+        {!showFavorites && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {quranIndex.slice(0, 4).map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => {
+                  setSearchQuery("");
+                  setExpandedCategories([cat.id]);
+                  document.getElementById(`cat-${cat.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                className="bg-card border border-border rounded-xl p-3 text-center hover:bg-muted transition-colors"
+              >
+                <span className="text-2xl">{cat.icon}</span>
+                <p className="text-xs font-medium text-foreground mt-1 truncate">{cat.name.split(" ").slice(0, 2).join(" ")}</p>
+                <p className="text-[10px] text-muted-foreground">{cat.entries.length} item</p>
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Categories */}
         {filteredIndex.length === 0 ? (
           <div className="text-center py-12 text-muted-foreground">
-            <Search className="w-12 h-12 mx-auto mb-3 opacity-40" />
-            <p className="font-medium">Tidak ditemukan</p>
-            <p className="text-sm mt-1">Coba kata kunci lain</p>
+            {showFavorites ? (
+              <>
+                <Heart className="w-12 h-12 mx-auto mb-3 opacity-40" />
+                <p className="font-medium">Belum ada favorit</p>
+                <p className="text-sm mt-1">Ketuk ikon ❤️ pada referensi untuk menyimpannya</p>
+              </>
+            ) : (
+              <>
+                <Search className="w-12 h-12 mx-auto mb-3 opacity-40" />
+                <p className="font-medium">Tidak ditemukan</p>
+                <p className="text-sm mt-1">Coba kata kunci lain</p>
+              </>
+            )}
           </div>
         ) : (
           <div className="space-y-3">
@@ -142,7 +200,20 @@ const QuranIndexPage = () => {
                   {isExpanded && (
                     <div className="border-t border-border divide-y divide-border">
                       {category.entries.map((entry, idx) => (
-                        <IndexEntryItem key={idx} entry={entry} />
+                        <IndexEntryItem
+                          key={idx}
+                          entry={entry}
+                          isFav={isBookmarked(entry.surah, entry.ayah)}
+                          onToggleFav={() =>
+                            toggle({
+                              title: entry.title,
+                              surah: entry.surah,
+                              ayah: entry.ayah,
+                              surahName: entry.surahName,
+                              arabic: entry.arabic,
+                            })
+                          }
+                        />
                       ))}
                     </div>
                   )}
@@ -156,7 +227,15 @@ const QuranIndexPage = () => {
   );
 };
 
-function IndexEntryItem({ entry }: { entry: QuranIndexEntry }) {
+function IndexEntryItem({
+  entry,
+  isFav,
+  onToggleFav,
+}: {
+  entry: QuranIndexEntry;
+  isFav: boolean;
+  onToggleFav: () => void;
+}) {
   const navigate = useNavigate();
 
   const formatText = () => {
@@ -182,6 +261,12 @@ function IndexEntryItem({ entry }: { entry: QuranIndexEntry }) {
     window.open(url, "_blank");
   };
 
+  const handleToggleFav = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onToggleFav();
+    toast.success(isFav ? "Dihapus dari favorit" : "Ditambahkan ke favorit");
+  };
+
   return (
     <div className="w-full text-left px-4 py-3 hover:bg-muted/30 transition-colors group">
       <div className="flex items-start justify-between gap-2">
@@ -197,6 +282,18 @@ function IndexEntryItem({ entry }: { entry: QuranIndexEntry }) {
           </p>
         </button>
         <div className="flex items-center gap-1 shrink-0 mt-1">
+          <button
+            onClick={handleToggleFav}
+            className={cn(
+              "w-8 h-8 rounded-lg flex items-center justify-center transition-all",
+              isFav
+                ? "text-destructive"
+                : "text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100"
+            )}
+            title={isFav ? "Hapus dari favorit" : "Tambah ke favorit"}
+          >
+            <Heart className={cn("w-4 h-4", isFav && "fill-current")} />
+          </button>
           <button
             onClick={handleCopy}
             className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-all opacity-0 group-hover:opacity-100"
