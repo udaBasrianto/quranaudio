@@ -19,7 +19,7 @@ import { useBookmarks } from "@/hooks/useBookmarks";
 import { useOfflineAudio } from "@/hooks/useOfflineAudio";
 import { useTheme, FontSize } from "@/hooks/useTheme";
 import { Reciter, Surah, Moshaf } from "@/types/quran";
-import { ArrowLeft, Users, Download, DownloadCloud, Loader2, Filter } from "lucide-react";
+import { ArrowLeft, Users, Download, DownloadCloud, Loader2, Filter, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { juzData, getSurahsInJuz } from "@/data/juzData";
@@ -48,6 +48,7 @@ const Index = () => {
   const [showDzikirPagiPetang, setShowDzikirPagiPetang] = useState(false);
   const [showPrayerTimes, setShowPrayerTimes] = useState(false);
   const [selectedJuz, setSelectedJuz] = useState<string>("all");
+  const [juzPlaylist, setJuzPlaylist] = useState<number[] | null>(null);
 
   const { data: recitersData, isLoading: isLoadingReciters } = useReciters();
   const { data: surahsData, isLoading: isLoadingSurahs } = useSurahs();
@@ -123,6 +124,26 @@ const Index = () => {
     if (!selectedMoshaf || !availableSurahs.includes(surah.id)) return;
     setCurrentSurah(surah);
     setCurrentAyahIndex(null);
+    setJuzPlaylist(null); // reset juz playlist when manually selecting
+  };
+
+  const handlePlayJuz = () => {
+    if (selectedJuz === "all" || !surahsData?.suwar || !selectedMoshaf) return;
+    const juzNumber = parseInt(selectedJuz);
+    const surahsInJuz = getSurahsInJuz(juzNumber);
+    // Only include surahs available for this reciter
+    const playable = surahsInJuz.filter((id) => availableSurahs.includes(id));
+    if (playable.length === 0) {
+      toast.error("Tidak ada surah yang tersedia untuk juz ini");
+      return;
+    }
+    setJuzPlaylist(playable);
+    const firstSurah = surahsData.suwar.find((s) => s.id === playable[0]);
+    if (firstSurah) {
+      setCurrentSurah(firstSurah);
+      setCurrentAyahIndex(null);
+      toast.success(`Memutar Juz ${juzNumber} (${playable.length} surah)`);
+    }
   };
 
   const handleBackToReciters = () => {
@@ -136,6 +157,7 @@ const Index = () => {
   const handleClosePlayer = () => {
     setCurrentSurah(null);
     setCurrentAyahIndex(null);
+    setJuzPlaylist(null);
   };
 
   const handleTimeUpdate = useCallback((currentTime: number, duration: number) => {
@@ -285,6 +307,16 @@ const Index = () => {
                   ))}
                 </SelectContent>
               </Select>
+              {selectedJuz !== "all" && (
+                <Button
+                  size="sm"
+                  className="h-9 rounded-xl gap-1.5"
+                  onClick={handlePlayJuz}
+                >
+                  <Play className="w-4 h-4" />
+                  Putar Juz
+                </Button>
+              )}
             </div>
           </div>
         ) : (
@@ -450,7 +482,7 @@ const Index = () => {
           reciter={selectedReciter}
           moshaf={selectedMoshaf}
           surahs={surahsData.suwar}
-          availableSurahs={availableSurahs}
+          availableSurahs={juzPlaylist || availableSurahs}
           onSurahChange={setCurrentSurah}
           onClose={handleClosePlayer}
           onShowText={() => setShowTextViewer(true)}
