@@ -113,12 +113,9 @@ const QuranQuiz = () => {
               </Select>
             </div>
 
-            <Button className="w-full" size="lg" onClick={startQuiz} disabled={surahDetail.ayat.length < 4}>
-              Mulai Kuis ({surahDetail.jumlahAyat} ayat)
+            <Button className="w-full" size="lg" onClick={startQuiz}>
+              Mulai Kuis Kosakata (15 soal)
             </Button>
-            {surahDetail.ayat.length < 4 && (
-              <p className="text-xs text-destructive">Surah ini terlalu pendek untuk kuis (minimal 4 ayat).</p>
-            )}
           </Card>
 
           <Card className="p-4 bg-primary/5 border-primary/20">
