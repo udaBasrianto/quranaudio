@@ -157,6 +157,7 @@ const Index = () => {
   const handleClosePlayer = () => {
     setCurrentSurah(null);
     setCurrentAyahIndex(null);
+    setJuzPlaylist(null);
   };
 
   const handleTimeUpdate = useCallback((currentTime: number, duration: number) => {
