@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, X, BookOpen, Repeat, Repeat1, Shuffle, WifiOff } from "lucide-react";
+import { Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, X, BookOpen, Repeat, Repeat1, Shuffle, WifiOff, Layers } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Surah, Reciter, Moshaf } from "@/types/quran";
 import { getSurahAudioUrl } from "@/lib/api";
