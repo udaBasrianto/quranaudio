@@ -113,19 +113,16 @@ const QuranQuiz = () => {
               </Select>
             </div>
 
-            <Button className="w-full" size="lg" onClick={startQuiz} disabled={surahDetail.ayat.length < 4}>
-              Mulai Kuis ({surahDetail.jumlahAyat} ayat)
+            <Button className="w-full" size="lg" onClick={startQuiz}>
+              Mulai Kuis Kosakata (15 soal)
             </Button>
-            {surahDetail.ayat.length < 4 && (
-              <p className="text-xs text-destructive">Surah ini terlalu pendek untuk kuis (minimal 4 ayat).</p>
-            )}
           </Card>
 
           <Card className="p-4 bg-primary/5 border-primary/20">
             <h3 className="font-semibold text-foreground mb-1">💡 Cara Bermain</h3>
             <p className="text-sm text-muted-foreground">
-              Anda akan diberikan ayat dalam bahasa Arab, lalu pilih terjemahan yang benar dari 4 pilihan.
-              Cocokkan ayat dengan artinya untuk mendalami pemahaman Al-Quran!
+              Anda akan diberikan kosakata Al-Quran, lalu pilih arti/kata yang benar dari 4 pilihan.
+              Cocokkan kata dengan artinya untuk mendalami pemahaman kosakata Al-Quran!
             </p>
           </Card>
         </div>
