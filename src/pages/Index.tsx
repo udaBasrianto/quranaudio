@@ -19,7 +19,7 @@ import { useBookmarks } from "@/hooks/useBookmarks";
 import { useOfflineAudio } from "@/hooks/useOfflineAudio";
 import { useTheme, FontSize } from "@/hooks/useTheme";
 import { Reciter, Surah, Moshaf } from "@/types/quran";
-import { ArrowLeft, Users, Download, DownloadCloud, Loader2, Filter } from "lucide-react";
+import { ArrowLeft, Users, Download, DownloadCloud, Loader2, Filter, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { juzData, getSurahsInJuz } from "@/data/juzData";
