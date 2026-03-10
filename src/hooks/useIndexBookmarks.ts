@@ -7,6 +7,7 @@ export interface IndexBookmark {
   surahName: string;
   arabic?: string;
   savedAt: string;
+  note?: string;
 }
 
 const KEY = "quran-index-bookmarks";
@@ -33,6 +34,25 @@ export function useIndexBookmarks() {
     [bookmarks]
   );
 
+  const getNote = useCallback(
+    (surah: number, ayah: number | string) =>
+      bookmarks.find((b) => b.surah === surah && String(b.ayah) === String(ayah))?.note || "",
+    [bookmarks]
+  );
+
+  const setNote = useCallback(
+    (surah: number, ayah: number | string, note: string) => {
+      setBookmarks((prev) =>
+        prev.map((b) =>
+          b.surah === surah && String(b.ayah) === String(ayah)
+            ? { ...b, note: note.trim() || undefined }
+            : b
+        )
+      );
+    },
+    []
+  );
+
   const toggle = useCallback(
     (entry: Omit<IndexBookmark, "savedAt">) => {
       setBookmarks((prev) => {
@@ -50,5 +70,5 @@ export function useIndexBookmarks() {
     []
   );
 
-  return { bookmarks, isBookmarked, toggle };
+  return { bookmarks, isBookmarked, toggle, getNote, setNote };
 }

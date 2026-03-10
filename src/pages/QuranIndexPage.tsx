@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Search, X, BookOpen, ChevronDown, ChevronUp, ExternalLink, Copy, MessageCircle, Heart } from "lucide-react";
+import { ArrowLeft, Search, X, BookOpen, ChevronDown, ChevronUp, ExternalLink, Copy, MessageCircle, Heart, StickyNote, Check } from "lucide-react";
 import { toast } from "sonner";
 import { quranIndex, QuranIndexCategory, QuranIndexEntry } from "@/data/quranIndex";
 import { useIndexBookmarks } from "@/hooks/useIndexBookmarks";
@@ -11,7 +11,7 @@ const QuranIndexPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
   const [showFavorites, setShowFavorites] = useState(false);
-  const { bookmarks, isBookmarked, toggle } = useIndexBookmarks();
+  const { bookmarks, isBookmarked, toggle, getNote, setNote } = useIndexBookmarks();
 
   const toggleCategory = (id: string) => {
     setExpandedCategories((prev) =>
@@ -204,6 +204,7 @@ const QuranIndexPage = () => {
                           key={idx}
                           entry={entry}
                           isFav={isBookmarked(entry.surah, entry.ayah)}
+                          note={getNote(entry.surah, entry.ayah)}
                           onToggleFav={() =>
                             toggle({
                               title: entry.title,
@@ -213,6 +214,7 @@ const QuranIndexPage = () => {
                               arabic: entry.arabic,
                             })
                           }
+                          onSaveNote={(text) => setNote(entry.surah, entry.ayah, text)}
                         />
                       ))}
                     </div>
@@ -230,13 +232,19 @@ const QuranIndexPage = () => {
 function IndexEntryItem({
   entry,
   isFav,
+  note,
   onToggleFav,
+  onSaveNote,
 }: {
   entry: QuranIndexEntry;
   isFav: boolean;
+  note: string;
   onToggleFav: () => void;
+  onSaveNote: (text: string) => void;
 }) {
   const navigate = useNavigate();
+  const [editingNote, setEditingNote] = useState(false);
+  const [noteText, setNoteText] = useState(note);
 
   const formatText = () => {
     let text = `📖 ${entry.title}\n`;
@@ -267,6 +275,22 @@ function IndexEntryItem({
     toast.success(isFav ? "Dihapus dari favorit" : "Ditambahkan ke favorit");
   };
 
+  const handleOpenNote = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!isFav) {
+      onToggleFav();
+      toast.success("Ditambahkan ke favorit");
+    }
+    setNoteText(note);
+    setEditingNote(true);
+  };
+
+  const handleSaveNote = () => {
+    onSaveNote(noteText);
+    setEditingNote(false);
+    toast.success("Catatan tersimpan!");
+  };
+
   return (
     <div className="w-full text-left px-4 py-3 hover:bg-muted/30 transition-colors group">
       <div className="flex items-start justify-between gap-2">
@@ -295,6 +319,18 @@ function IndexEntryItem({
             <Heart className={cn("w-4 h-4", isFav && "fill-current")} />
           </button>
           <button
+            onClick={handleOpenNote}
+            className={cn(
+              "w-8 h-8 rounded-lg flex items-center justify-center transition-all",
+              note
+                ? "text-primary"
+                : "text-muted-foreground hover:text-primary opacity-0 group-hover:opacity-100"
+            )}
+            title="Catatan pribadi"
+          >
+            <StickyNote className={cn("w-4 h-4", note && "fill-primary/20")} />
+          </button>
+          <button
             onClick={handleCopy}
             className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-all opacity-0 group-hover:opacity-100"
             title="Salin ke clipboard"
@@ -317,6 +353,44 @@ function IndexEntryItem({
           </button>
         </div>
       </div>
+
+      {/* Existing note display */}
+      {note && !editingNote && (
+        <button
+          onClick={handleOpenNote}
+          className="mt-2 w-full text-left bg-muted/50 border border-border rounded-lg px-3 py-2 text-xs text-muted-foreground italic cursor-pointer hover:bg-muted transition-colors"
+        >
+          📝 {note}
+        </button>
+      )}
+
+      {/* Note editor */}
+      {editingNote && (
+        <div className="mt-2 space-y-2" onClick={(e) => e.stopPropagation()}>
+          <textarea
+            value={noteText}
+            onChange={(e) => setNoteText(e.target.value)}
+            placeholder="Tulis catatan pribadi..."
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
+            rows={2}
+            autoFocus
+          />
+          <div className="flex gap-2 justify-end">
+            <button
+              onClick={() => setEditingNote(false)}
+              className="px-3 py-1.5 text-xs rounded-lg border border-border text-muted-foreground hover:bg-muted transition-colors"
+            >
+              Batal
+            </button>
+            <button
+              onClick={handleSaveNote}
+              className="px-3 py-1.5 text-xs rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors flex items-center gap-1"
+            >
+              <Check className="w-3 h-3" /> Simpan
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
