@@ -204,6 +204,7 @@ const QuranIndexPage = () => {
                           key={idx}
                           entry={entry}
                           isFav={isBookmarked(entry.surah, entry.ayah)}
+                          note={getNote(entry.surah, entry.ayah)}
                           onToggleFav={() =>
                             toggle({
                               title: entry.title,
@@ -213,6 +214,7 @@ const QuranIndexPage = () => {
                               arabic: entry.arabic,
                             })
                           }
+                          onSaveNote={(text) => setNote(entry.surah, entry.ayah, text)}
                         />
                       ))}
                     </div>
