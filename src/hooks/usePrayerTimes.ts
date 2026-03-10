@@ -250,7 +250,7 @@ export function usePrayerTimes() {
       Isha: "Isya",
     };
 
-    const timeouts: NodeJS.Timeout[] = [];
+    const timeouts: ReturnType<typeof setTimeout>[] = [];
 
     const scheduleNotification = (prayerKey: string, prayerTime: string) => {
       const [hours, minutes] = prayerTime.split(":").map(Number);
