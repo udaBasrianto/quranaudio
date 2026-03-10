@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Search, X, BookOpen, ChevronDown, ChevronUp, ExternalLink, Copy, MessageCircle, Heart } from "lucide-react";
+import { ArrowLeft, Search, X, BookOpen, ChevronDown, ChevronUp, ExternalLink, Copy, MessageCircle, Heart, StickyNote, Check } from "lucide-react";
 import { toast } from "sonner";
 import { quranIndex, QuranIndexCategory, QuranIndexEntry } from "@/data/quranIndex";
 import { useIndexBookmarks } from "@/hooks/useIndexBookmarks";
@@ -11,7 +11,7 @@ const QuranIndexPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
   const [showFavorites, setShowFavorites] = useState(false);
-  const { bookmarks, isBookmarked, toggle } = useIndexBookmarks();
+  const { bookmarks, isBookmarked, toggle, getNote, setNote } = useIndexBookmarks();
 
   const toggleCategory = (id: string) => {
     setExpandedCategories((prev) =>
