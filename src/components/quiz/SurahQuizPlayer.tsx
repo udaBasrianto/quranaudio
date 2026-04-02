@@ -106,6 +106,18 @@ export function SurahQuizPlayer({
   const progressPercent = ((questionIndex + 1) / totalQuestions) * 100;
   const word = currentQuestion.word;
 
+  const finishCalled = useRef(false);
+
+  useEffect(() => {
+    if (isQuizFinished && !finishCalled.current) {
+      finishCalled.current = true;
+      onFinish?.();
+    }
+    if (!isQuizFinished) {
+      finishCalled.current = false;
+    }
+  }, [isQuizFinished, onFinish]);
+
   if (isQuizFinished) {
     return (
       <QuizFinishedCard
