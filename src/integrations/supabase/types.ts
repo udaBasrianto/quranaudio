@@ -62,6 +62,42 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_scores: {
+        Row: {
+          best_streak: number
+          created_at: string
+          id: string
+          mode: string
+          score: number
+          surah_name: string | null
+          surah_number: number | null
+          total_questions: number
+          user_id: string
+        }
+        Insert: {
+          best_streak?: number
+          created_at?: string
+          id?: string
+          mode?: string
+          score?: number
+          surah_name?: string | null
+          surah_number?: number | null
+          total_questions?: number
+          user_id: string
+        }
+        Update: {
+          best_streak?: number
+          created_at?: string
+          id?: string
+          mode?: string
+          score?: number
+          surah_name?: string | null
+          surah_number?: number | null
+          total_questions?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
