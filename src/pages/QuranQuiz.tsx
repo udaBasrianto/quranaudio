@@ -14,8 +14,10 @@ import { saveQuizScore } from "@/hooks/useQuizLeaderboard";
 import { useQueryClient } from "@tanstack/react-query";
 
 const QuranQuiz = () => {
+  const [activeTab, setActiveTab] = useState("quiz");
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  const queryClient = useQueryClient();
   const {
     selectedJuz,
     setSelectedJuz,
