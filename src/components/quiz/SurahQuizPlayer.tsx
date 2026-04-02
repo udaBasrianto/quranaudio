@@ -98,6 +98,7 @@ export function SurahQuizPlayer({
   onNext,
   onReset,
   onBackToSurah,
+  onFinish,
 }: SurahQuizPlayerProps) {
   const { currentQuestion, selectedAnswer, isCorrect, score, totalAnswered, streak, questionIndex, totalQuestions } = quizState;
   const isArabicToIndo = mode === "arabic-to-indonesian";
