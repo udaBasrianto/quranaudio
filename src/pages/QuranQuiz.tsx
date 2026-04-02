@@ -1,12 +1,17 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, BookOpen, Loader2, LogIn } from "lucide-react";
+import { ArrowLeft, BookOpen, Loader2, LogIn, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSurahQuiz, SurahQuizMode } from "@/hooks/useSurahQuiz";
 import { JuzSurahSelector } from "@/components/quiz/JuzSurahSelector";
 import { SurahQuizPlayer } from "@/components/quiz/SurahQuizPlayer";
+import { QuizLeaderboard } from "@/components/quiz/QuizLeaderboard";
 import { useAuth } from "@/hooks/useAuth";
+import { saveQuizScore } from "@/hooks/useQuizLeaderboard";
+import { useQueryClient } from "@tanstack/react-query";
 
 const QuranQuiz = () => {
   const navigate = useNavigate();
