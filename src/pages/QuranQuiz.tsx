@@ -74,6 +74,22 @@ const QuranQuiz = () => {
     );
   }
 
+  // Save score handler
+  const handleQuizFinishAndSave = async () => {
+    if (quizState && user && surahDetail) {
+      await saveQuizScore({
+        userId: user.id,
+        surahNumber: selectedSurah ?? undefined,
+        surahName: surahDetail.namaLatin,
+        score: quizState.score,
+        totalQuestions: quizState.totalAnswered,
+        bestStreak: quizState.bestStreak,
+        mode,
+      });
+      queryClient.invalidateQueries({ queryKey: ["quiz-leaderboard"] });
+    }
+  };
+
   // Quiz active
   if (quizStarted && quizState && surahDetail) {
     return (
@@ -88,6 +104,7 @@ const QuranQuiz = () => {
             onNext={nextQuestion}
             onReset={() => { resetQuiz(); startQuiz(); }}
             onBackToSurah={resetToSurahSelection}
+            onFinish={handleQuizFinishAndSave}
           />
         </div>
       </div>
