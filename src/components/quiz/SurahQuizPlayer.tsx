@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { ArrowLeft, Trophy, Flame, Check, X, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -31,6 +32,7 @@ interface SurahQuizPlayerProps {
   onNext: () => void;
   onReset: () => void;
   onBackToSurah: () => void;
+  onFinish?: () => void;
 }
 
 function QuizFinishedCard({
@@ -97,11 +99,24 @@ export function SurahQuizPlayer({
   onNext,
   onReset,
   onBackToSurah,
+  onFinish,
 }: SurahQuizPlayerProps) {
   const { currentQuestion, selectedAnswer, isCorrect, score, totalAnswered, streak, questionIndex, totalQuestions } = quizState;
   const isArabicToIndo = mode === "arabic-to-indonesian";
   const progressPercent = ((questionIndex + 1) / totalQuestions) * 100;
   const word = currentQuestion.word;
+
+  const finishCalled = useRef(false);
+
+  useEffect(() => {
+    if (isQuizFinished && !finishCalled.current) {
+      finishCalled.current = true;
+      onFinish?.();
+    }
+    if (!isQuizFinished) {
+      finishCalled.current = false;
+    }
+  }, [isQuizFinished, onFinish]);
 
   if (isQuizFinished) {
     return (
