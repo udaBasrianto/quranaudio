@@ -31,6 +31,7 @@ interface SurahQuizPlayerProps {
   onNext: () => void;
   onReset: () => void;
   onBackToSurah: () => void;
+  onFinish?: () => void;
 }
 
 function QuizFinishedCard({
