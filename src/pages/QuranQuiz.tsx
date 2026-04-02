@@ -163,7 +163,7 @@ const QuranQuiz = () => {
     );
   }
 
-  // Juz/Surah selection
+  // Juz/Surah selection with leaderboard tabs
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-4 max-w-lg space-y-4">
@@ -172,17 +172,34 @@ const QuranQuiz = () => {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-xl font-bold text-foreground">Kuis Al-Quran Per Surah</h1>
-            <p className="text-sm text-muted-foreground">Pilih Juz & Surah untuk memulai kuis</p>
+            <h1 className="text-xl font-bold text-foreground">Kuis Al-Quran</h1>
+            <p className="text-sm text-muted-foreground">Uji pemahaman kosakata Al-Quran</p>
           </div>
         </div>
 
-        <JuzSurahSelector
-          selectedJuz={selectedJuz}
-          onSelectJuz={setSelectedJuz}
-          onSelectSurah={setSelectedSurah}
-          onBack={resetToJuzSelection}
-        />
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="quiz" className="gap-1">
+              <BookOpen className="w-4 h-4" />
+              Mulai Kuis
+            </TabsTrigger>
+            <TabsTrigger value="leaderboard" className="gap-1">
+              <Trophy className="w-4 h-4" />
+              Leaderboard
+            </TabsTrigger>
+          </TabsList>
+          <TabsContent value="quiz" className="mt-4">
+            <JuzSurahSelector
+              selectedJuz={selectedJuz}
+              onSelectJuz={setSelectedJuz}
+              onSelectSurah={setSelectedSurah}
+              onBack={resetToJuzSelection}
+            />
+          </TabsContent>
+          <TabsContent value="leaderboard" className="mt-4">
+            <QuizLeaderboard />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
