@@ -14,6 +14,7 @@ import DzikirPagiPetangPage from "./pages/DzikirPagiPetangPage";
 import QuranIndexPage from "./pages/QuranIndexPage";
 import SurahReaderPage from "./pages/SurahReaderPage";
 import NotFound from "./pages/NotFound";
+import ProfilePage from "./pages/ProfilePage";
 import { MobileBottomNav } from "./components/MobileBottomNav";
 
 const queryClient = new QueryClient();
