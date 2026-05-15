@@ -87,6 +87,21 @@ export default function Auth() {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    const result = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
+    });
+    if (result.error) {
+      setIsLoading(false);
+      toast.error(result.error.message || "Gagal masuk dengan Google");
+      return;
+    }
+    if (result.redirected) return;
+    toast.success("Login berhasil!");
+    navigate("/");
+  };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
