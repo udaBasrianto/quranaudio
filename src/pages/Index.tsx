@@ -45,6 +45,7 @@ const Index = () => {
   const [totalAyahs, setTotalAyahs] = useState<number>(0);
   const [selectedJuz, setSelectedJuz] = useState<string>("all");
   const [juzPlaylist, setJuzPlaylist] = useState<number[] | null>(null);
+  const [mobileShowMurottal, setMobileShowMurottal] = useState(false);
 
   const { data: recitersData, isLoading: isLoadingReciters } = useReciters();
   const { data: surahsData, isLoading: isLoadingSurahs } = useSurahs();
