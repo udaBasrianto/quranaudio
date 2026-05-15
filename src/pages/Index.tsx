@@ -11,6 +11,7 @@ import { BookmarksList } from "@/components/BookmarksList";
 import { AyahSearchResults } from "@/components/AyahSearchResults";
 import { ReciterSkeleton, SurahSkeleton } from "@/components/LoadingSkeleton";
 import { HomeGreeting } from "@/components/HomeGreeting";
+import { MobileHomeMenu } from "@/components/MobileHomeMenu";
 import { useReciters, useSurahs } from "@/hooks/useQuranData";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useBookmarks } from "@/hooks/useBookmarks";
