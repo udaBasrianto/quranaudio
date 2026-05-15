@@ -222,6 +222,25 @@ const Index = () => {
 
       <main className="container mx-auto px-4 py-4 space-y-4">
 
+        {/* Mobile redesigned home menu */}
+        {!selectedReciter && !mobileShowMurottal && (
+          <MobileHomeMenu onShowMurottal={() => setMobileShowMurottal(true)} />
+        )}
+
+        <div className={!selectedReciter && !mobileShowMurottal ? "hidden md:block space-y-4" : "space-y-4"}>
+        {selectedReciter || mobileShowMurottal ? (
+          <button
+            onClick={() => {
+              if (selectedReciter) handleBackToReciters();
+              else setMobileShowMurottal(false);
+            }}
+            className="md:hidden flex items-center gap-2 text-primary font-medium hover:underline text-sm"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Kembali ke Beranda
+          </button>
+        ) : null}
+
         {/* Greeting & Favorite Reciters (only on reciters tab without selection) */}
         {!selectedReciter && activeTab === "reciters" && (() => {
           const favReciters = recitersData?.reciters?.filter(r => isReciterFavorite(r.id)) || [];
