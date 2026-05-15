@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { Loader2, Mail, Lock, User } from "lucide-react";
 import { z } from "zod";
-import { lovable } from "@/integrations/lovable";
 
 const authSchema = z.object({
   email: z.string().email({ message: "Email tidak valid" }),
@@ -87,21 +86,6 @@ export default function Auth() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setIsLoading(true);
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-    });
-    if (result.error) {
-      setIsLoading(false);
-      toast.error(result.error.message || "Gagal masuk dengan Google");
-      return;
-    }
-    if (result.redirected) return;
-    toast.success("Login berhasil!");
-    navigate("/");
-  };
-
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
@@ -109,29 +93,7 @@ export default function Auth() {
           <CardTitle className="text-2xl font-bold">Al-Quran Digital</CardTitle>
           <CardDescription>Masuk atau daftar untuk melanjutkan</CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <Button
-            type="button"
-            variant="outline"
-            className="w-full"
-            onClick={handleGoogleSignIn}
-            disabled={isLoading}
-          >
-            <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" aria-hidden>
-              <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.4-1.6 4.1-5.5 4.1-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.7 3.4 14.6 2.5 12 2.5 6.8 2.5 2.6 6.7 2.6 12s4.2 9.5 9.4 9.5c5.4 0 9-3.8 9-9.2 0-.6-.1-1.1-.2-1.6H12z"/>
-            </svg>
-            Lanjutkan dengan Google
-          </Button>
-
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-border" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">atau</span>
-            </div>
-          </div>
-
+        <CardContent>
           <Tabs defaultValue="login" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="login">Masuk</TabsTrigger>

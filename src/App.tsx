@@ -14,7 +14,6 @@ import DzikirPagiPetangPage from "./pages/DzikirPagiPetangPage";
 import QuranIndexPage from "./pages/QuranIndexPage";
 import SurahReaderPage from "./pages/SurahReaderPage";
 import NotFound from "./pages/NotFound";
-import ProfilePage from "./pages/ProfilePage";
 import { MobileBottomNav } from "./components/MobileBottomNav";
 
 const queryClient = new QueryClient();
@@ -36,7 +35,6 @@ const App = () => (
           <Route path="/dzikir-pagi-petang" element={<DzikirPagiPetangPage />} />
           <Route path="/quran-index" element={<QuranIndexPage />} />
           <Route path="/surah/:surahId" element={<SurahReaderPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
