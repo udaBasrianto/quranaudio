@@ -425,6 +425,7 @@ const Index = () => {
             </>
           )}
         </div>
+        </div>
       </main>
 
       {/* Ayah Search */}
