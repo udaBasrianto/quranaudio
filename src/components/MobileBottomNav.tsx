@@ -7,7 +7,7 @@ const items = [
   { to: "/quran-index", label: "Indeks", icon: BookOpen },
   { to: "/prayer-times", label: "Sholat", icon: Clock },
   { to: "/quran-quiz", label: "Kuis", icon: Trophy },
-  { to: "/auth", label: "Profil", icon: User },
+  { to: "/profile", label: "Profil", icon: User },
 ];
 
 export function MobileBottomNav() {
