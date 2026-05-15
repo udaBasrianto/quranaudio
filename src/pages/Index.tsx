@@ -11,6 +11,7 @@ import { BookmarksList } from "@/components/BookmarksList";
 import { AyahSearchResults } from "@/components/AyahSearchResults";
 import { ReciterSkeleton, SurahSkeleton } from "@/components/LoadingSkeleton";
 import { HomeGreeting } from "@/components/HomeGreeting";
+import { MobileHomeMenu } from "@/components/MobileHomeMenu";
 import { useReciters, useSurahs } from "@/hooks/useQuranData";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useBookmarks } from "@/hooks/useBookmarks";
@@ -44,6 +45,7 @@ const Index = () => {
   const [totalAyahs, setTotalAyahs] = useState<number>(0);
   const [selectedJuz, setSelectedJuz] = useState<string>("all");
   const [juzPlaylist, setJuzPlaylist] = useState<number[] | null>(null);
+  const [mobileShowMurottal, setMobileShowMurottal] = useState(false);
 
   const { data: recitersData, isLoading: isLoadingReciters } = useReciters();
   const { data: surahsData, isLoading: isLoadingSurahs } = useSurahs();
@@ -219,6 +221,25 @@ const Index = () => {
       />
 
       <main className="container mx-auto px-4 py-4 space-y-4">
+
+        {/* Mobile redesigned home menu */}
+        {!selectedReciter && !mobileShowMurottal && (
+          <MobileHomeMenu onShowMurottal={() => setMobileShowMurottal(true)} />
+        )}
+
+        <div className={!selectedReciter && !mobileShowMurottal ? "hidden md:block space-y-4" : "space-y-4"}>
+        {selectedReciter || mobileShowMurottal ? (
+          <button
+            onClick={() => {
+              if (selectedReciter) handleBackToReciters();
+              else setMobileShowMurottal(false);
+            }}
+            className="md:hidden flex items-center gap-2 text-primary font-medium hover:underline text-sm"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Kembali ke Beranda
+          </button>
+        ) : null}
 
         {/* Greeting & Favorite Reciters (only on reciters tab without selection) */}
         {!selectedReciter && activeTab === "reciters" && (() => {
@@ -403,6 +424,7 @@ const Index = () => {
               )}
             </>
           )}
+        </div>
         </div>
       </main>
 
