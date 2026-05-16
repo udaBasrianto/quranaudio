@@ -13,6 +13,7 @@ import DzikirCounterPage from "./pages/DzikirCounterPage";
 import DzikirPagiPetangPage from "./pages/DzikirPagiPetangPage";
 import QuranIndexPage from "./pages/QuranIndexPage";
 import SurahReaderPage from "./pages/SurahReaderPage";
+import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 import { MobileBottomNav } from "./components/MobileBottomNav";
 
