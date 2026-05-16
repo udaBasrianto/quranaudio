@@ -46,8 +46,8 @@ function getGreeting() {
 export function MobileHomeMenu({ onShowMurottal, onOpenMore, prayerLabel }: MobileHomeMenuProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const displayName =
-    user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Sahabat";
+  const displayName = getDisplayName(user);
+  const avatarUrl = getAvatarUrl(user);
 
   const today = new Date().toLocaleDateString("id-ID", {
     weekday: "long",
