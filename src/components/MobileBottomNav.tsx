@@ -1,17 +1,19 @@
 import { Home, Trophy, User, BookOpen, Clock } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-
-const items = [
-  { to: "/", label: "Beranda", icon: Home },
-  { to: "/quran-index", label: "Indeks", icon: BookOpen },
-  { to: "/prayer-times", label: "Sholat", icon: Clock },
-  { to: "/quran-quiz", label: "Kuis", icon: Trophy },
-  { to: "/auth", label: "Profil", icon: User },
-];
+import { useAuth } from "@/hooks/useAuth";
 
 export function MobileBottomNav() {
   const { pathname } = useLocation();
+  const { user } = useAuth();
+
+  const items = [
+    { to: "/", label: "Beranda", icon: Home },
+    { to: "/quran-index", label: "Indeks", icon: BookOpen },
+    { to: "/prayer-times", label: "Sholat", icon: Clock },
+    { to: "/quran-quiz", label: "Kuis", icon: Trophy },
+    { to: user ? "/profile" : "/auth", label: "Profil", icon: User },
+  ];
 
   // Hide on auth page itself for cleanliness
   if (pathname === "/auth") return null;

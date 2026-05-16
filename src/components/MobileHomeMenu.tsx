@@ -13,7 +13,9 @@ import {
   Bell,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
+import { getAvatarUrl, getDisplayName, getInitial } from "@/lib/userProfile";
 
 interface MobileHomeMenuProps {
   onShowMurottal: () => void;
@@ -44,8 +46,8 @@ function getGreeting() {
 export function MobileHomeMenu({ onShowMurottal, onOpenMore, prayerLabel }: MobileHomeMenuProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const displayName =
-    user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Sahabat";
+  const displayName = getDisplayName(user);
+  const avatarUrl = getAvatarUrl(user);
 
   const today = new Date().toLocaleDateString("id-ID", {
     weekday: "long",
@@ -82,9 +84,18 @@ export function MobileHomeMenu({ onShowMurottal, onOpenMore, prayerLabel }: Mobi
             <Bell className="h-5 w-5 text-foreground" />
             <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-destructive" />
           </button>
-          <div className="h-10 w-10 rounded-full bg-primary/15 flex items-center justify-center text-primary font-semibold">
-            {displayName.charAt(0).toUpperCase()}
-          </div>
+          <button
+            onClick={() => navigate(user ? "/profile" : "/auth")}
+            className="h-10 w-10 rounded-full overflow-hidden ring-2 ring-primary/20"
+            aria-label="Profil"
+          >
+            <Avatar className="h-10 w-10">
+              {avatarUrl && <AvatarImage src={avatarUrl} alt={displayName} />}
+              <AvatarFallback className="bg-primary/15 text-primary font-semibold">
+                {getInitial(displayName)}
+              </AvatarFallback>
+            </Avatar>
+          </button>
         </div>
       </div>
 

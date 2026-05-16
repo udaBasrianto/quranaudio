@@ -13,6 +13,7 @@ import DzikirCounterPage from "./pages/DzikirCounterPage";
 import DzikirPagiPetangPage from "./pages/DzikirPagiPetangPage";
 import QuranIndexPage from "./pages/QuranIndexPage";
 import SurahReaderPage from "./pages/SurahReaderPage";
+import ProfilePage from "./pages/ProfilePage";
 import NotFound from "./pages/NotFound";
 import { MobileBottomNav } from "./components/MobileBottomNav";
 
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/dzikir-pagi-petang" element={<DzikirPagiPetangPage />} />
           <Route path="/quran-index" element={<QuranIndexPage />} />
           <Route path="/surah/:surahId" element={<SurahReaderPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
