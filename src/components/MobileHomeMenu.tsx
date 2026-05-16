@@ -13,7 +13,9 @@ import {
   Bell,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/useAuth";
+import { getAvatarUrl, getDisplayName, getInitial } from "@/lib/userProfile";
 
 interface MobileHomeMenuProps {
   onShowMurottal: () => void;
