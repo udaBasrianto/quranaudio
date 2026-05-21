@@ -179,6 +179,69 @@ export default function ProfilePage() {
           </Card>
         </div>
 
+        {/* Trend chart */}
+        <Card className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h3 className="text-sm font-semibold text-foreground">Tren Skor Kuis</h3>
+              <p className="text-xs text-muted-foreground">
+                {trend.length > 0
+                  ? `${trend.length} kuis terakhir`
+                  : "Belum ada data kuis"}
+              </p>
+            </div>
+            <Trophy className="w-4 h-4 text-primary" />
+          </div>
+          {trend.length >= 2 ? (
+            <div className="h-44 -ml-2">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={trend} margin={{ top: 5, right: 8, left: 0, bottom: 0 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                  <XAxis
+                    dataKey="label"
+                    stroke="hsl(var(--muted-foreground))"
+                    fontSize={11}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    stroke="hsl(var(--muted-foreground))"
+                    fontSize={11}
+                    tickLine={false}
+                    domain={[0, 100]}
+                    unit="%"
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "hsl(var(--popover))",
+                      border: "1px solid hsl(var(--border))",
+                      borderRadius: 8,
+                      fontSize: 12,
+                    }}
+                    labelStyle={{ color: "hsl(var(--foreground))" }}
+                    formatter={(v: number, n: string) =>
+                      n === "accuracy" ? [`${v}%`, "Akurasi"] : [v, "Skor"]
+                    }
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="accuracy"
+                    stroke="hsl(var(--primary))"
+                    strokeWidth={2.5}
+                    dot={{ r: 3, fill: "hsl(var(--primary))" }}
+                    activeDot={{ r: 5 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="h-32 flex items-center justify-center text-xs text-muted-foreground text-center px-4">
+              {trend.length === 1
+                ? "Selesaikan minimal 2 kuis untuk melihat grafik tren."
+                : "Mulai kerjakan kuis untuk melihat grafik perkembanganmu."}
+            </div>
+          )}
+        </Card>
+
         {/* Quick links */}
         <Card className="overflow-hidden divide-y divide-border">
           {menuLinks.map((m) => (
