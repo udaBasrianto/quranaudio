@@ -51,6 +51,7 @@ export default function ProfilePage() {
   const navigate = useNavigate();
   const { user, isAdmin, signOut, loading } = useAuth();
   const [stats, setStats] = useState<Stats>({ bestQuizScore: 0, quizCount: 0 });
+  const [trend, setTrend] = useState<TrendPoint[]>([]);
   const [signingOut, setSigningOut] = useState(false);
 
   useEffect(() => {
@@ -62,11 +63,24 @@ export default function ProfilePage() {
     (async () => {
       const { data } = await supabase
         .from("quiz_scores")
-        .select("score")
-        .eq("user_id", user.id);
+        .select("score, total_questions, created_at")
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: true });
       if (data) {
         const best = data.reduce((m, r) => Math.max(m, r.score || 0), 0);
         setStats({ bestQuizScore: best, quizCount: data.length });
+        const points: TrendPoint[] = data.slice(-10).map((r, i) => {
+          const d = new Date(r.created_at);
+          return {
+            index: i + 1,
+            label: d.toLocaleDateString("id-ID", { day: "2-digit", month: "short" }),
+            score: r.score || 0,
+            accuracy: r.total_questions
+              ? Math.round(((r.score || 0) / r.total_questions) * 100)
+              : 0,
+          };
+        });
+        setTrend(points);
       }
     })();
   }, [user]);
