@@ -25,10 +25,26 @@ import {
   getInitial,
   getProvider,
 } from "@/lib/userProfile";
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from "recharts";
 
 interface Stats {
   bestQuizScore: number;
   quizCount: number;
+}
+
+interface TrendPoint {
+  index: number;
+  label: string;
+  accuracy: number;
+  score: number;
 }
 
 export default function ProfilePage() {
