@@ -3,7 +3,6 @@ import {
   BookOpen,
   Clock,
   Hand,
-  Sparkles,
   Trophy,
   HardDrive,
   Headphones,
@@ -11,6 +10,7 @@ import {
   MoreHorizontal,
   ChevronRight,
   Bell,
+  User,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -19,7 +19,6 @@ import { getAvatarUrl, getDisplayName, getInitial } from "@/lib/userProfile";
 
 interface MobileHomeMenuProps {
   onShowMurottal: () => void;
-  onOpenMore?: () => void;
   prayerLabel?: string;
 }
 
@@ -31,8 +30,8 @@ const tiles = [
   { key: "dzikir-pp", label: "Pagi & Petang", icon: Sunrise, bg: "bg-violet-100 dark:bg-violet-900/30", color: "text-violet-700 dark:text-violet-300", to: "/dzikir-pagi-petang" },
   { key: "quiz", label: "Kuis Quran", icon: Trophy, bg: "bg-orange-100 dark:bg-orange-900/30", color: "text-orange-700 dark:text-orange-300", to: "/quran-quiz" },
   { key: "offline", label: "Offline", icon: HardDrive, bg: "bg-teal-100 dark:bg-teal-900/30", color: "text-teal-700 dark:text-teal-300", to: "/offline-storage" },
-  { key: "fav", label: "Sparkles", icon: Sparkles, bg: "bg-yellow-100 dark:bg-yellow-900/30", color: "text-yellow-700 dark:text-yellow-300", to: "/quran-index" },
-  { key: "more", label: "Lainnya", icon: MoreHorizontal, bg: "bg-muted", color: "text-muted-foreground" },
+  { key: "profile", label: "Profil", icon: User, bg: "bg-yellow-100 dark:bg-yellow-900/30", color: "text-yellow-700 dark:text-yellow-300", to: "/profile" },
+  { key: "more", label: "Lainnya", icon: MoreHorizontal, bg: "bg-muted", color: "text-muted-foreground", to: "/quran-index" },
 ];
 
 function getGreeting() {
@@ -43,7 +42,7 @@ function getGreeting() {
   return "Selamat Malam";
 }
 
-export function MobileHomeMenu({ onShowMurottal, onOpenMore, prayerLabel }: MobileHomeMenuProps) {
+export function MobileHomeMenu({ onShowMurottal, prayerLabel }: MobileHomeMenuProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
   const displayName = getDisplayName(user);
@@ -58,7 +57,6 @@ export function MobileHomeMenu({ onShowMurottal, onOpenMore, prayerLabel }: Mobi
 
   const handleTile = (t: (typeof tiles)[number]) => {
     if (t.key === "murottal") return onShowMurottal();
-    if (t.key === "more") return onOpenMore?.();
     if (t.to) navigate(t.to);
   };
 
