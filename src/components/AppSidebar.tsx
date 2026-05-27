@@ -33,6 +33,7 @@ interface AppSidebarProps {
   customNightEnd: string;
   onCustomNightEndChange: (time: string) => void;
   prayerTimes: PrayerTimes | null;
+  hideOnMobile?: boolean;
 }
 
 export function AppSidebar({
@@ -52,7 +53,9 @@ export function AppSidebar({
   customNightEnd,
   onCustomNightEndChange,
   prayerTimes,
+  hideOnMobile = false,
 }: AppSidebarProps) {
+
   const navigate = useNavigate();
   const { user, isAdmin, signOut } = useAuth();
   const { isInstallable, installApp } = usePWAInstall();
