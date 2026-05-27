@@ -33,6 +33,7 @@ interface AppSidebarProps {
   customNightEnd: string;
   onCustomNightEndChange: (time: string) => void;
   prayerTimes: PrayerTimes | null;
+  hideOnMobile?: boolean;
 }
 
 export function AppSidebar({
@@ -52,7 +53,9 @@ export function AppSidebar({
   customNightEnd,
   onCustomNightEndChange,
   prayerTimes,
+  hideOnMobile = false,
 }: AppSidebarProps) {
+
   const navigate = useNavigate();
   const { user, isAdmin, signOut } = useAuth();
   const { isInstallable, installApp } = usePWAInstall();
@@ -78,7 +81,7 @@ export function AppSidebar({
   return (
     <>
       {/* Top Bar */}
-      <header className="sticky top-0 z-40 bg-primary text-primary-foreground shadow-lg">
+      <header className={cn("sticky top-0 z-40 bg-primary text-primary-foreground shadow-lg", hideOnMobile && "hidden md:block")}>
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
             <button
