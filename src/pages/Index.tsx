@@ -61,22 +61,7 @@ const Index = () => {
     batchProgress,
     downloadAllSurahs,
   } = useOfflineAudio();
-  const {
-    theme,
-    toggleTheme,
-    themeColor,
-    setThemeColor,
-    arabicFontSize,
-    setArabicFontSize,
-    getArabicFontStyle,
-    autoNightMode,
-    setAutoNightMode,
-    customNightStart,
-    setCustomNightStart,
-    customNightEnd,
-    setCustomNightEnd,
-    prayerTimes,
-  } = useTheme();
+  const { getArabicFontStyle } = useTheme();
 
   const filteredReciters = useMemo(() => {
     if (!recitersData?.reciters) return [];
