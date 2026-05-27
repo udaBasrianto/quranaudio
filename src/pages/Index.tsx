@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { AppSidebar } from "@/components/AppSidebar";
+
 import { TabNavigation } from "@/components/TabNavigation";
 import { SearchInput } from "@/components/SearchInput";
 import { ReciterCard } from "@/components/ReciterCard";
