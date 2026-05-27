@@ -16,7 +16,7 @@ import { useReciters, useSurahs } from "@/hooks/useQuranData";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { useOfflineAudio } from "@/hooks/useOfflineAudio";
-import { useTheme, FontSize } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks/useTheme";
 import { Reciter, Surah, Moshaf } from "@/types/quran";
 import { ArrowLeft, Users, Download, DownloadCloud, Loader2, Filter, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
