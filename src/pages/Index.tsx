@@ -201,42 +201,21 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      <AppSidebar
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        bookmarkCount={bookmarks.length}
-        onShowBookmarks={() => setShowBookmarks(true)}
-        themeColor={themeColor}
-        onColorChange={setThemeColor}
-        arabicFontSize={arabicFontSize}
-        onFontSizeChange={setArabicFontSize}
-        onOpenSearch={() => setShowAyahSearch(true)}
-        autoNightMode={autoNightMode}
-        onAutoNightModeChange={setAutoNightMode}
-        customNightStart={customNightStart}
-        onCustomNightStartChange={setCustomNightStart}
-        customNightEnd={customNightEnd}
-        onCustomNightEndChange={setCustomNightEnd}
-        prayerTimes={prayerTimes}
-        hideOnMobile={!selectedReciter && !mobileShowMurottal}
-      />
-
-
-      <main className="container mx-auto px-4 py-4 space-y-4">
+      <main className="container mx-auto px-4 py-4 space-y-4 max-w-screen-sm">
 
         {/* Mobile redesigned home menu */}
         {!selectedReciter && !mobileShowMurottal && (
           <MobileHomeMenu onShowMurottal={() => setMobileShowMurottal(true)} />
         )}
 
-        <div className={!selectedReciter && !mobileShowMurottal ? "hidden md:block space-y-4" : "space-y-4"}>
+        <div className={!selectedReciter && !mobileShowMurottal ? "hidden" : "space-y-4"}>
         {selectedReciter || mobileShowMurottal ? (
           <button
             onClick={() => {
               if (selectedReciter) handleBackToReciters();
               else setMobileShowMurottal(false);
             }}
-            className="md:hidden flex items-center gap-2 text-primary font-medium hover:underline text-sm"
+            className="flex items-center gap-2 text-primary font-medium hover:underline text-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Kembali ke Beranda
