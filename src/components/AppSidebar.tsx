@@ -78,7 +78,7 @@ export function AppSidebar({
   return (
     <>
       {/* Top Bar */}
-      <header className="sticky top-0 z-40 bg-primary text-primary-foreground shadow-lg">
+      <header className="sticky top-0 z-40 bg-primary text-primary-foreground shadow-lg hidden md:block data-[mobile-show=true]:block" data-mobile-show={typeof window !== "undefined" && window.location.pathname !== "/" ? "true" : "false"}>
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center gap-3">
             <button
