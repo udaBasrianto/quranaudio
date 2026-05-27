@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { AppSidebar } from "@/components/AppSidebar";
+
 import { TabNavigation } from "@/components/TabNavigation";
 import { SearchInput } from "@/components/SearchInput";
 import { ReciterCard } from "@/components/ReciterCard";
@@ -16,7 +16,7 @@ import { useReciters, useSurahs } from "@/hooks/useQuranData";
 import { useFavorites } from "@/hooks/useFavorites";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { useOfflineAudio } from "@/hooks/useOfflineAudio";
-import { useTheme, FontSize } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks/useTheme";
 import { Reciter, Surah, Moshaf } from "@/types/quran";
 import { ArrowLeft, Users, Download, DownloadCloud, Loader2, Filter, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -61,22 +61,7 @@ const Index = () => {
     batchProgress,
     downloadAllSurahs,
   } = useOfflineAudio();
-  const {
-    theme,
-    toggleTheme,
-    themeColor,
-    setThemeColor,
-    arabicFontSize,
-    setArabicFontSize,
-    getArabicFontStyle,
-    autoNightMode,
-    setAutoNightMode,
-    customNightStart,
-    setCustomNightStart,
-    customNightEnd,
-    setCustomNightEnd,
-    prayerTimes,
-  } = useTheme();
+  const { getArabicFontStyle } = useTheme();
 
   const filteredReciters = useMemo(() => {
     if (!recitersData?.reciters) return [];
@@ -201,42 +186,21 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background pb-32">
-      <AppSidebar
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        bookmarkCount={bookmarks.length}
-        onShowBookmarks={() => setShowBookmarks(true)}
-        themeColor={themeColor}
-        onColorChange={setThemeColor}
-        arabicFontSize={arabicFontSize}
-        onFontSizeChange={setArabicFontSize}
-        onOpenSearch={() => setShowAyahSearch(true)}
-        autoNightMode={autoNightMode}
-        onAutoNightModeChange={setAutoNightMode}
-        customNightStart={customNightStart}
-        onCustomNightStartChange={setCustomNightStart}
-        customNightEnd={customNightEnd}
-        onCustomNightEndChange={setCustomNightEnd}
-        prayerTimes={prayerTimes}
-        hideOnMobile={!selectedReciter && !mobileShowMurottal}
-      />
-
-
-      <main className="container mx-auto px-4 py-4 space-y-4">
+      <main className="container mx-auto px-4 py-4 space-y-4 max-w-screen-sm">
 
         {/* Mobile redesigned home menu */}
         {!selectedReciter && !mobileShowMurottal && (
           <MobileHomeMenu onShowMurottal={() => setMobileShowMurottal(true)} />
         )}
 
-        <div className={!selectedReciter && !mobileShowMurottal ? "hidden md:block space-y-4" : "space-y-4"}>
+        <div className={!selectedReciter && !mobileShowMurottal ? "hidden" : "space-y-4"}>
         {selectedReciter || mobileShowMurottal ? (
           <button
             onClick={() => {
               if (selectedReciter) handleBackToReciters();
               else setMobileShowMurottal(false);
             }}
-            className="md:hidden flex items-center gap-2 text-primary font-medium hover:underline text-sm"
+            className="flex items-center gap-2 text-primary font-medium hover:underline text-sm"
           >
             <ArrowLeft className="w-4 h-4" />
             Kembali ke Beranda
