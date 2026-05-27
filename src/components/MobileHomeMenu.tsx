@@ -63,7 +63,7 @@ export function MobileHomeMenu({ onShowMurottal, onOpenMore, prayerLabel }: Mobi
   };
 
   return (
-    <div className="md:hidden space-y-5">
+    <div className="space-y-5">
       {/* Greeting header */}
       <div className="flex items-start justify-between gap-3">
         <div>
